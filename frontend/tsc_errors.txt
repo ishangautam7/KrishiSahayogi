@@ -1,0 +1,4 @@
+app/register/page.tsx(45,18): error TS17008: JSX element 'motion.div' has no corresponding closing tag.
+app/register/page.tsx(211,11): error TS17002: Expected corresponding JSX closing tag for 'main'.
+app/register/page.tsx(212,5): error TS1005: ')' expected.
+app/register/page.tsx(213,3): error TS1109: Expression expected.
