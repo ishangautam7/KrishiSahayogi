@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Noto_Sans_Devanagari } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
+import { ReduxProvider } from "@/store/provider";
+import AuthLoader from "@/components/AuthLoader";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,8 +31,16 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${notoSansDevanagari.variable} antialiased`}
       >
-        {children}
+        <ReduxProvider>
+          <AuthLoader>
+            <Navbar />
+            {children}
+          </AuthLoader>
+        </ReduxProvider>
+
       </body>
     </html>
   );
 }
+
+
