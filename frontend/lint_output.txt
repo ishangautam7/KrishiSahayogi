@@ -1,0 +1,69 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+D:\repos\hack\TBD\frontend\app\farmer-network\page.tsx
+  23:13  warning  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\repos\hack\TBD\frontend\app\guide\page.tsx
+  4:25  warning  'Bookmark' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\repos\hack\TBD\frontend\app\login\page.tsx
+    6:10  warning  'LogIn' is defined but never used                                @typescript-eslint/no-unused-vars
+    6:41  warning  'Github' is defined but never used                               @typescript-eslint/no-unused-vars
+    8:21  warning  'clearError' is defined but never used                           @typescript-eslint/no-unused-vars
+  132:28  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+D:\repos\hack\TBD\frontend\app\marketplace\page.tsx
+    4:45   warning  'Tag' is defined but never used                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+    4:58   warning  'CheckCircle2' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+    4:86   warning  'X' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   30:13   warning  'isAuthenticated' is assigned a value but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   67:33   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+   67:113  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  141:45   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\repos\hack\TBD\frontend\app\page.tsx
+    5:3    warning  'Leaf' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+    7:3    warning  'ShoppingCart' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+    8:3    warning  'Brain' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   13:3    warning  'BookOpen' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  160:21   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  177:15   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  283:21   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  330:19   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  364:19   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  364:150  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  368:21   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\repos\hack\TBD\frontend\app\register\page.tsx
+  8:24  warning  'clearError' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\repos\hack\TBD\frontend\app\yield-prediction\page.tsx
+  3:10  warning  'motion' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\repos\hack\TBD\frontend\components\Chat\ChatWindow.tsx
+  8:18  warning  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\repos\hack\TBD\frontend\components\Marketplace\ProductListingForm.tsx
+   4:18  warning  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
+   5:13  warning  'Upload' is defined but never used           @typescript-eslint/no-unused-vars
+   5:21  warning  'Sprout' is defined but never used           @typescript-eslint/no-unused-vars
+   5:42  warning  'IndianRupee' is defined but never used      @typescript-eslint/no-unused-vars
+  36:23  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+D:\repos\hack\TBD\frontend\store\slices\authSlice.ts
+  31:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  47:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\repos\hack\TBD\frontend\store\slices\messageSlice.ts
+  30:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 40 problems (14 errors, 26 warnings)
+
