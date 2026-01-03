@@ -80,7 +80,7 @@ export default function LandingPage() {
         icon: Microscope,
         color: "teal",
         image: "/assets/images/Disease.png",
-        link: "/crop-recommendation"
+        link: "/disease-detection"
       },
       {
         title: t("community_network"),
@@ -97,6 +97,13 @@ export default function LandingPage() {
         color: "rose",
         image: "/assets/images/Marketplace.png",
         link: "/marketplace"
+      }, {
+        title: t("plantation_guide"),
+        desc: "Get step-by-step guidance for planting crops and growing your farm.",
+        icon: BarChart3,
+        color: "emerald",
+        image: "/assets/images/Plantation.png",
+        link: "/guide"
       }
     ];
 
