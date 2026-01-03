@@ -2,8 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Sprout, Brain, MapPin, Cloudy, Thermometer,
-    Droplets, FlaskConical, Beaker, Waves,
+    Brain, MapPin, Cloudy, Thermometer,
+    Droplets, FlaskConical, Beaker,
     ChevronRight, CheckCircle2, AlertCircle,
     Info, Wind, Sun
 } from "lucide-react";
@@ -12,7 +12,10 @@ import axios from "axios";
 
 const ML_API_URL = "http://localhost:5000";
 
-export default function CropRecommendationPage() {
+const SOIL_TYPES = ['Sandy', 'Loamy', 'Black', 'Red', 'Clayey'];
+const CROP_TYPES = ['Maize', 'Sugarcane', 'Cotton', 'Tobacco', 'Paddy', 'Barley', 'Wheat', 'Millets', 'Oil seeds', 'Pulses', 'Ground Nuts'];
+
+export default function FertilizerPredictionPage() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
@@ -21,9 +24,10 @@ export default function CropRecommendationPage() {
     const [weather, setWeather] = useState<any>(null);
     const [locationName, setLocationName] = useState("Detecting location...");
 
-    // Form States
-    const [cropForm, setCropForm] = useState({
-        N: "", P: "", K: "", temperature: "", humidity: "", ph: "", rainfall: ""
+    // Form State
+    const [fertiForm, setFertiForm] = useState({
+        Temperature: "", Humidity: "", Moisture: "", Soil_Type: "Sandy", Crop_Type: "Maize",
+        Nitrogen: "", Potassium: "", Phosphorous: ""
     });
 
     useEffect(() => {
@@ -63,25 +67,26 @@ export default function CropRecommendationPage() {
         return "Thunderstorm";
     };
 
-    const handleCropSubmit = async (e: React.FormEvent) => {
+    const handleFertiSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
         setResult(null);
         try {
             const payload = {
-                n: Number(cropForm.N),
-                p: Number(cropForm.P),
-                k: Number(cropForm.K),
-                temp: Number(cropForm.temperature),
-                humidity: Number(cropForm.humidity),
-                ph: Number(cropForm.ph),
-                rainfall: Number(cropForm.rainfall)
+                temp: Number(fertiForm.Temperature),
+                humidity: Number(fertiForm.Humidity),
+                moisture: Number(fertiForm.Moisture),
+                soil_type: fertiForm.Soil_Type,
+                crop_type: fertiForm.Crop_Type,
+                nitrogen: Number(fertiForm.Nitrogen),
+                potassium: Number(fertiForm.Potassium),
+                phosphorus: Number(fertiForm.Phosphorous)
             };
-            const res = await axios.post(`${ML_API_URL}/predict_crop`, payload);
+            const res = await axios.post(`${ML_API_URL}/predict_fertilizer`, payload);
             setResult(res.data);
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to get crop recommendation. Make sure ML server is running.");
+            setError(err.response?.data?.message || "Failed to get fertilizer prediction. Make sure ML server is running.");
         } finally {
             setLoading(false);
         }
@@ -102,34 +107,53 @@ export default function CropRecommendationPage() {
                         <Brain className="w-4 h-4" /> AI Powered Agriculture
                     </motion.div>
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">
-                        Crop <span className="text-emerald-500">Suggestion</span>
+                        Fertilizer <span className="text-emerald-500">Aid</span>
                     </h1>
                     <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium leading-relaxed">
-                        Harness the power of machine learning to discover the perfect crop for your soil and environment.
+                        Optimize your soil health with precise fertilizer recommendations tailored to your specific crop and environment.
                     </p>
                 </div>
 
                 <div className="grid lg:grid-cols-12 gap-10">
-                    <div className="lg:col-span-5 xl:col-span-4 space-y-8">
+                    <div className="lg:col-span-12 xl:col-span-4 space-y-8">
                         <motion.div
                             layout
                             className="glass p-8 rounded-[3rem] shadow-2xl border border-white/20 dark:border-gray-800/50 relative overflow-hidden"
                         >
                             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-8 flex items-center gap-3">
-                                <Sprout className="text-emerald-500" /> Soil & Env Parameters
+                                <FlaskConical className="text-emerald-500" /> Efficiency Parameters
                             </h2>
 
-                            <form onSubmit={handleCropSubmit} className="space-y-6">
+                            <form onSubmit={handleFertiSubmit} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
-                                    <InputGroup label="Nitrogen (N)" value={cropForm.N} onChange={(v) => setCropForm({ ...cropForm, N: v })} icon={<Beaker className="w-4 h-4" />} />
-                                    <InputGroup label="Phosphorus (P)" value={cropForm.P} onChange={(v) => setCropForm({ ...cropForm, P: v })} icon={<FlaskConical className="w-4 h-4" />} />
-                                    <InputGroup label="Potassium (K)" value={cropForm.K} onChange={(v) => setCropForm({ ...cropForm, K: v })} icon={<FlaskConical className="w-4 h-4" />} />
-                                    <InputGroup label="pH Level" value={cropForm.ph} onChange={(v) => setCropForm({ ...cropForm, ph: v })} icon={<AlertCircle className="w-4 h-4" />} />
-                                    <InputGroup label="Temperature" value={cropForm.temperature} onChange={(v) => setCropForm({ ...cropForm, temperature: v })} icon={<Thermometer className="w-4 h-4" />} />
-                                    <InputGroup label="Humidity" value={cropForm.humidity} onChange={(v) => setCropForm({ ...cropForm, humidity: v })} icon={<Droplets className="w-4 h-4" />} />
-                                    <div className="col-span-2">
-                                        <InputGroup label="Rainfall (mm)" value={cropForm.rainfall} onChange={(v) => setCropForm({ ...cropForm, rainfall: v })} icon={<Waves className="w-4 h-4" />} />
+                                    <div className="col-span-2 grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Soil Type</label>
+                                            <select
+                                                value={fertiForm.Soil_Type}
+                                                onChange={(e) => setFertiForm({ ...fertiForm, Soil_Type: e.target.value })}
+                                                className="w-full bg-gray-50/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl py-4 px-4 text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 appearance-none bg-no-repeat bg-[right_1rem_center]"
+                                            >
+                                                {SOIL_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Crop Type</label>
+                                            <select
+                                                value={fertiForm.Crop_Type}
+                                                onChange={(e) => setFertiForm({ ...fertiForm, Crop_Type: e.target.value })}
+                                                className="w-full bg-gray-50/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl py-4 px-4 text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 appearance-none transition-all"
+                                            >
+                                                {CROP_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                                            </select>
+                                        </div>
                                     </div>
+                                    <InputGroup label="Nitrogen" value={fertiForm.Nitrogen} onChange={(v) => setFertiForm({ ...fertiForm, Nitrogen: v })} />
+                                    <InputGroup label="Potassium" value={fertiForm.Potassium} onChange={(v) => setFertiForm({ ...fertiForm, Potassium: v })} />
+                                    <InputGroup label="Phosphorus" value={fertiForm.Phosphorous} onChange={(v) => setFertiForm({ ...fertiForm, Phosphorous: v })} />
+                                    <InputGroup label="Temp (°C)" value={fertiForm.Temperature} onChange={(v) => setFertiForm({ ...fertiForm, Temperature: v })} />
+                                    <InputGroup label="Humidity" value={fertiForm.Humidity} onChange={(v) => setFertiForm({ ...fertiForm, Humidity: v })} />
+                                    <InputGroup label="Moisture" value={fertiForm.Moisture} onChange={(v) => setFertiForm({ ...fertiForm, Moisture: v })} />
                                 </div>
 
                                 <button
@@ -148,33 +172,6 @@ export default function CropRecommendationPage() {
                                 </button>
                             </form>
                         </motion.div>
-
-                        <div className="glass p-8 rounded-[3rem] bg-gradient-to-br from-emerald-600 to-green-700 text-white shadow-2xl relative overflow-hidden group">
-                            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
-                            <div className="flex items-start justify-between relative z-10">
-                                <div>
-                                    <h3 className="text-3xl font-black mb-2 flex items-center gap-2">
-                                        <MapPin className="w-6 h-6" /> Localized
-                                    </h3>
-                                    <p className="opacity-90 font-bold text-lg mb-6">{locationName}</p>
-                                    <div className="flex items-center gap-4">
-                                        <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md">
-                                            {weather ? <Sun className="w-6 h-6" /> : <Cloudy className="w-6 h-6 animate-pulse" />}
-                                        </div>
-                                        <div>
-                                            <p className="text-2xl font-black leading-none">{weather ? `${weather.temp}°C` : "--°C"}</p>
-                                            <p className="text-xs uppercase font-bold opacity-70">{weather ? weather.condition : "Loading weather..."}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <Cloudy className="w-16 h-16 opacity-20 animate-float" />
-                            </div>
-                            <p className="mt-8 pt-6 border-t border-white/20 text-sm font-bold opacity-90 leading-relaxed italic">
-                                {weather && weather.temp > 25 ? "\"Warm conditions detected. Ensure proper irrigation for your crops today.\"" :
-                                    weather && weather.temp < 15 ? "\"Cooler temperatures today. Ideal for winter crop maintenance.\"" :
-                                        "\"Environmental data synced. AI recommendations are now optimized for your local climate.\""}
-                            </p>
-                        </div>
                     </div>
 
                     <div className="lg:col-span-12 xl:col-span-8">
@@ -193,12 +190,12 @@ export default function CropRecommendationPage() {
                                     </div>
 
                                     <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600 dark:text-emerald-400 mb-4 bg-emerald-100 dark:bg-emerald-900/40 px-6 py-2 rounded-full leading-none">
-                                        Top Recommendation
+                                        Fertilizer Insight
                                     </h3>
 
                                     <div className="mb-10">
                                         <h2 className="text-6xl md:text-8xl font-black text-gray-900 dark:text-white capitalize tracking-tighter mb-4">
-                                            {result.crop}
+                                            {result.fertilizer}
                                         </h2>
                                         <p className="text-gray-500 dark:text-gray-400 text-lg font-medium max-w-md mx-auto">
                                             Our AI analysis predicts this will yield the best results for your current environmental parameters.
@@ -220,7 +217,7 @@ export default function CropRecommendationPage() {
                                                 <Wind className="text-blue-500 w-5 h-5" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] uppercase font-black text-gray-400 tracking-wider">Climate Fit</p>
+                                                <p className="text-[10px] uppercase font-black text-gray-400 tracking-wider">Soil Harmony</p>
                                                 <p className="text-lg font-black text-gray-800 dark:text-gray-200">Optimal</p>
                                             </div>
                                         </div>
@@ -244,12 +241,12 @@ export default function CropRecommendationPage() {
                                     <div className="relative mb-12">
                                         <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full scale-150 animate-pulse"></div>
                                         <div className="w-32 h-32 bg-white dark:bg-gray-800 rounded-[3rem] shadow-2xl flex items-center justify-center relative z-10">
-                                            <Sprout className="w-16 h-16 text-emerald-500 animate-float" />
+                                            <Beaker className="w-16 h-16 text-emerald-500 animate-float" />
                                         </div>
                                     </div>
                                     <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-6">Ready for Diagnosis?</h3>
                                     <p className="text-gray-500 dark:text-gray-400 max-w-sm text-lg font-medium leading-relaxed">
-                                        Fill in the data modules on the left and our AI will process the complex agricultural relationships to provide expert advice.
+                                        Fill in the soil and crop modules and our AI will recommend the ideal fertilizer for your season.
                                     </p>
 
                                     {error && (
