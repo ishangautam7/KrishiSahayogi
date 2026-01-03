@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import validator from "validator";
-
+import { v4 as uuidv4 } from 'uuid';
 const userSchema = new mongoose.Schema(
     {
         name: {
@@ -91,7 +91,7 @@ userSchema.methods.generateToken = function () {
 };
 
 userSchema.methods.generateRefreshToken = function () {
-    const { v4: uuidv4 } = require('uuid');
+    
     const refreshToken = jwt.sign(
         {
             _id: this._id,
