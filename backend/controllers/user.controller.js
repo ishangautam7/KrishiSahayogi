@@ -23,12 +23,33 @@ export const getNearbyFarmers = async (req, res, next) => {
     }
 };
 
-// @desc    Get all farmers
+// @desc    Get all farmers with filters
 // @route   GET /api/v1/users
 // @access  Public
 export const getFarmers = async (req, res, next) => {
     try {
-        const farmers = await User.find().select("-password");
+        const { location, farmerType, primaryCrops } = req.query;
+
+        const query = {};
+
+        if (location) {
+            query.location = { $regex: location, $options: "i" };
+        }
+
+        if (farmerType && farmerType !== "all") {
+            query.farmerType = farmerType;
+        }
+
+        if (primaryCrops) {
+            query.primaryCrops = { $regex: primaryCrops, $options: "i" };
+        }
+
+        // Exclude current user if logged in
+        if (req.user) {
+            query._id = { $ne: req.user.id };
+        }
+
+        const farmers = await User.find(query).select("-password");
         res.status(200).json({
             success: true,
             count: farmers.length,
