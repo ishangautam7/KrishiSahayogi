@@ -27,6 +27,9 @@ export default function Marketplace() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [showListingForm, setShowListingForm] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("All");
+
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
     const fetchProducts = async () => {
@@ -44,6 +47,14 @@ export default function Marketplace() {
     useEffect(() => {
         fetchProducts();
     }, []);
+
+    const filteredProducts = products.filter(product => {
+        const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.location.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === "All" || product.category.toLowerCase() === selectedCategory.toLowerCase();
+        return matchesSearch && matchesCategory;
+    });
 
     return (
         <div className="pt-24 pb-12 min-h-screen bg-slate-50 dark:bg-gray-900">
@@ -102,6 +113,8 @@ export default function Marketplace() {
                                         <input
                                             type="text"
                                             placeholder="Search produce..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
                                             className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-transparent focus:border-emerald-500 rounded-2xl text-sm transition-all shadow-inner"
                                         />
                                     </div>
@@ -110,10 +123,14 @@ export default function Marketplace() {
                                 <div>
                                     <label className="text-xs font-black text-gray-600 uppercase tracking-widest pl-2 mb-2 block">Categories</label>
                                     <div className="space-y-2">
-                                        {["All", "Vegetables", "Fruits", "Grains", "Seeds", "Tools"].map(cat => (
-                                            <button key={cat} className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-sm font-medium transition-colors flex items-center justify-between group">
+                                        {["All", "Vegetables", "Fruits", "Grains", "Seeds", "Tools", "Other"].map(cat => (
+                                            <button
+                                                key={cat}
+                                                onClick={() => setSelectedCategory(cat)}
+                                                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-between group ${selectedCategory === cat ? "bg-emerald-500 text-white" : "hover:bg-emerald-50 dark:hover:bg-emerald-900/30"}`}
+                                            >
                                                 {cat}
-                                                <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                <ChevronRight className={`w-4 h-4 transition-opacity ${selectedCategory === cat ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} />
                                             </button>
                                         ))}
                                     </div>
@@ -128,9 +145,9 @@ export default function Marketplace() {
                                 <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                                 <p className="text-gray-600 font-bold uppercase tracking-widest text-xs">Fetching Fresh Harvest...</p>
                             </div>
-                        ) : products.length > 0 ? (
+                        ) : filteredProducts.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {products.map((product) => (
+                                {filteredProducts.map((product) => (
                                     <motion.div
                                         key={product._id}
                                         layout

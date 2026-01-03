@@ -38,3 +38,28 @@ export const getFarmers = async (req, res, next) => {
         next(error);
     }
 };
+// @desc    Update user profile
+// @route   PUT /api/v1/user/profile
+// @access  Private
+export const updateProfile = async (req, res, next) => {
+    try {
+        const { name, phone, location, farmerType, primaryCrops } = req.body;
+
+        const user = await User.findById(req.user.id);
+
+        if (name) user.name = name;
+        if (phone) user.phone = phone;
+        if (location) user.location = location;
+        if (farmerType) user.farmerType = farmerType;
+        if (primaryCrops) user.primaryCrops = primaryCrops;
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            user,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
