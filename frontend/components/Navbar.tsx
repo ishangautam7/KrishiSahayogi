@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User } from "lucide-react";
+import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { logoutUser } from "@/store/slices/authSlice";
@@ -25,6 +25,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "Marketplace", href: "/marketplace", icon: ShoppingCart },
     { name: "AI Features", href: "/crop-recommendation", icon: Brain },
+    { name: "Networking", href: "/networking", icon: Users },
     { name: "Plantation Guide", href: "/guide", icon: BookOpen },
   ];
 
