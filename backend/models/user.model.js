@@ -20,8 +20,24 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: [true, "Password is required"],
+            required: function () {
+                return this.authProvider === 'local';
+            },
             minlength: [8, "Password must be at least 8 characters"],
+            select: false,
+        },
+        googleId: {
+            type: String,
+            sparse: true,
+            unique: true,
+        },
+        authProvider: {
+            type: String,
+            enum: ['local', 'google'],
+            default: 'local',
+        },
+        refreshToken: {
+            type: String,
             select: false,
         },
         phone: {
@@ -72,6 +88,19 @@ userSchema.methods.generateToken = function () {
         process.env.JWT_SECRET || "default_secret_for_development_replace_immediately",
         { expiresIn: process.env.JWT_EXPIRE || "30d" }
     );
+};
+
+userSchema.methods.generateRefreshToken = function () {
+    const { v4: uuidv4 } = require('uuid');
+    const refreshToken = jwt.sign(
+        {
+            _id: this._id,
+            tokenId: uuidv4(),
+        },
+        process.env.REFRESH_TOKEN_SECRET || process.env.JWT_SECRET || "default_refresh_secret",
+        { expiresIn: process.env.REFRESH_TOKEN_EXPIRE || "7d" }
+    );
+    return refreshToken;
 };
 
 export const User = mongoose.model("User", userSchema);
