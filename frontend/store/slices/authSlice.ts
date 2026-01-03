@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import apiClient from '@/lib/axios';
 
 interface User {
-    id: string;
+    _id: string;
     name: string;
     email: string;
     phone: string;
@@ -96,6 +96,9 @@ const authSlice = createSlice({
         clearError: (state) => {
             state.error = null;
         },
+        setUser: (state, action: PayloadAction<User>) => {
+            state.user = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -165,5 +168,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, setUser } = authSlice.actions;
 export default authSlice.reducer;

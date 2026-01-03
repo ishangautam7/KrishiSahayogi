@@ -23,9 +23,11 @@ import {
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function LandingPage() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { t } = useLanguage();
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -45,7 +47,8 @@ export default function LandingPage() {
     },
   };
 
- 
+
+
   const features = [
     {
       title: "Yield Prediction",
@@ -121,28 +124,28 @@ export default function LandingPage() {
             className="text-left z-10"
           >
             <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-bold mb-6">
-             
+
             </motion.div>
             <motion.h1 variants={itemVariants} className="text-6xl sm:text-7xl lg:text-8xl font-black leading-tight mb-6">
-              <span className="nepali-text block text-gray-900 dark:text-white mb-2">कृषि सहयोगी</span>
-              <span className="gradient-text">Future of Farming</span>
+              <span className="nepali-text block text-gray-900 dark:text-white mb-2">{t("hero_brand")}</span>
+              <span className="gradient-text">{t("hero_title_gradient")}</span>
             </motion.h1>
-            <motion.p variants={itemVariants} className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-xl leading-relaxed">
-              Empowering farmers with AI-driven insights, disease detection, and a direct-to-consumer marketplace. Grow more, sell better.
+            <motion.p variants={itemVariants} className="text-lg sm:text-xl text-gray-700 dark:text-gray-400 mb-10 max-w-xl leading-relaxed">
+              {t("hero_subtitle")}
             </motion.p>
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-12">
               <Link href={isAuthenticated ? "/marketplace" : "/register"} className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-lg font-bold rounded-2xl shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all flex items-center justify-center gap-2 group text-center">
-                {isAuthenticated ? "Go to Marketplace" : "Start Farming Smarter"}
+                {isAuthenticated ? t("hero_cta_marketplace") : t("hero_cta_start")}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link href="/marketplace" className="px-8 py-4 glass text-gray-900 dark:text-white text-lg font-bold rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all text-center">
-                Explore Features
+                {t("hero_cta_explore")}
               </Link>
             </motion.div>
 
 
 
-           
+
           </motion.div >
 
           <motion.div
@@ -160,22 +163,7 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 to-transparent"></div>
             </div>
 
-            {/* Floating UI Elements */}
-            <motion.div
-              animate={{ y: [0, -20, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-10 -left-10 glass p-6 rounded-3xl z-20 shadow-xl"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                  <TrendingUp className="text-emerald-600 w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-bold uppercase">Growth</p>
 
-                </div>
-              </div>
-            </motion.div>
 
             <motion.div
               animate={{ y: [0, 20, 0] }}
@@ -187,7 +175,7 @@ export default function LandingPage() {
                   <ShieldCheck className="text-blue-600 w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 font-bold uppercase">Health</p>
+                  <p className="text-xs text-gray-600 font-bold uppercase">Health</p>
                   <p className="text-xl font-black text-gray-900 dark:text-white">Optimal</p>
                 </div>
               </div>
@@ -199,12 +187,12 @@ export default function LandingPage() {
         < div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-emerald-200/20 dark:bg-emerald-900/20 rounded-full blur-[120px] -z-10 animate-pulse-soft" ></div >
         <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-green-200/20 dark:bg-green-900/20 rounded-full blur-[100px] -z-10"></div>
 
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-gray-400 animate-bounce">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-gray-600 animate-bounce">
           <ChevronDown className="w-8 h-8" />
         </div>
       </section >
 
-      
+
 
       {/* Features Section */}
       < section id="features" className="py-32 bg-gray-50/50 dark:bg-gray-950/50 relative px-4 sm:px-6 lg:px-8" >
@@ -212,7 +200,7 @@ export default function LandingPage() {
           <div className="text-center mb-24">
             <h2 className="text-sm font-black text-emerald-600 uppercase tracking-[0.3em] mb-4">Core Ecosystem</h2>
             <h3 className="text-4xl sm:text-6xl font-black text-gray-900 dark:text-white mb-6">Designed for Every Farmer</h3>
-            <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Our comprehensive suite of tools leverages cutting-edge technology to solve traditional farming challenges.
             </p>
           </div>
@@ -228,11 +216,9 @@ export default function LandingPage() {
                 className="group relative p-8 rounded-[2.5rem] bg-white dark:bg-gray-900 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-900/50 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/10 overflow-hidden"
               >
                 <div className="relative z-10">
-                  <div className={`w-16 h-16 rounded-[1.25rem] bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500`}>
-                    <feature.icon className="text-emerald-600 w-8 h-8" />
-                  </div>
+
                   <h4 className="text-2xl font-black text-gray-900 dark:text-white mb-4 group-hover:text-emerald-600 transition-colors">{feature.title}</h4>
-                  <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-8">
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
                     {feature.desc}
                   </p>
                   <div className="w-full aspect-video rounded-3xl overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -300,7 +286,6 @@ export default function LandingPage() {
         </div>
       </section >
 
-     
 
       {/* Footer */}
       < footer className="bg-gray-900 dark:bg-black py-24 px-4 sm:px-6 lg:px-8" >
