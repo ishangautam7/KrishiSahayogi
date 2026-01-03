@@ -12,7 +12,7 @@ export default function DiseaseDetectionPage() {
                         <Microscope className="w-4 h-4" /> Instant Diagnostics
                     </div>
                     <h1 className="text-4xl sm:text-7xl font-black text-gray-900 dark:text-white mb-6">Disease Detection</h1>
-                    <p className="text-xl text-gray-500 dark:text-gray-400">Snap or upload a photo of your crop to identify pests, fungus, or nutrient deficiencies instantly.</p>
+                    <p className="text-xl text-gray-700 dark:text-gray-400">Snap or upload a photo of your crop to identify pests, fungus, or nutrient deficiencies instantly.</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -38,8 +38,8 @@ export default function DiseaseDetectionPage() {
                 </div>
 
                 <div className="glass p-12 rounded-[3rem] border-dashed border-2 border-gray-200 dark:border-gray-800">
-                    <ShieldCheck className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-400 font-medium italic">Our AI model can detect over 50+ common crop diseases in Nepal with 95% accuracy.</p>
+                    <ShieldCheck className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                    <p className="text-gray-600 font-medium italic">Our AI model can detect over 50+ common crop diseases in Nepal with 95% accuracy.</p>
                 </div>
             </div>
         </main>

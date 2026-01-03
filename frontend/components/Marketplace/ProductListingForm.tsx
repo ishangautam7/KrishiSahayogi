@@ -13,6 +13,8 @@ interface ProductListingFormProps {
 export default function ProductListingForm({ onClose, onSuccess }: ProductListingFormProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [image, setImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -21,15 +23,38 @@ export default function ProductListingForm({ onClose, onSuccess }: ProductListin
         category: "vegetables",
     });
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
-            await apiClient.post("/product", {
-                ...formData,
-                price: Number(formData.price),
+            const data = new FormData();
+            data.append("title", formData.title);
+            data.append("description", formData.description);
+            data.append("price", formData.price);
+            data.append("location", formData.location);
+            data.append("category", formData.category);
+            if (image) {
+                data.append("image", image);
+            }
+
+            await apiClient.post("/product", data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
             });
             onSuccess();
             onClose();
@@ -144,6 +169,22 @@ export default function ProductListingForm({ onClose, onSuccess }: ProductListin
                                 placeholder="e.g. Kathmandu, Nepal"
                                 className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border border-transparent focus:border-emerald-500 rounded-[1.25rem] text-sm transition-all focus:ring-4 focus:ring-emerald-500/10"
                             />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2">Product Image</label>
+                        <div className="flex items-center gap-4">
+                            <label className="flex-1 flex flex-col items-center justify-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-[1.25rem] hover:border-emerald-500 transition-colors cursor-pointer bg-gray-50 dark:bg-gray-800">
+                                <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                                <span className="text-xs text-gray-400 font-bold uppercase">Click to upload image</span>
+                                <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+                            </label>
+                            {imagePreview && (
+                                <div className="w-24 h-24 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+                                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                </div>
+                            )}
                         </div>
                     </div>
 

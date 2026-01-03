@@ -1,12 +1,13 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, ShoppingBag, MapPin, Tag, Filter, CheckCircle2, ChevronRight, X } from "lucide-react";
+import { Plus, Search, ShoppingBag, MapPin, Tag, Filter, CheckCircle2, ChevronRight, X, LayoutGrid, User as UserIcon, ShoppingCart } from "lucide-react";
 import { useState, useEffect } from "react";
 import apiClient from "@/lib/axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import ProductListingForm from "@/components/Marketplace/ProductListingForm";
+import { addToCart } from "@/store/slices/cartSlice";
 
 interface Product {
     _id: string;
@@ -27,7 +28,13 @@ export default function Marketplace() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [showListingForm, setShowListingForm] = useState(false);
-    const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const [selectedCategory, setSelectedCategory] = useState("All");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeTab, setActiveTab] = useState<"all" | "mine">("all");
+    const dispatch = useDispatch();
+
+    const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { totalQuantity } = useSelector((state: RootState) => state.cart);
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -44,6 +51,15 @@ export default function Marketplace() {
     useEffect(() => {
         fetchProducts();
     }, []);
+
+    const filteredProducts = products.filter(product => {
+        const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.location.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === "All" || product.category.toLowerCase() === selectedCategory.toLowerCase();
+        const matchesTab = activeTab === "all" || (activeTab === "mine" && product.owner?._id === user?._id);
+        return matchesSearch && matchesCategory && matchesTab;
+    });
 
     return (
         <div className="pt-24 pb-12 min-h-screen bg-slate-50 dark:bg-gray-900">
@@ -85,7 +101,38 @@ export default function Marketplace() {
                     </div>
                 </div>
 
-                {/* Discovery & Search */}
+                {/* Tabs & Search */}
+                <div className="flex flex-col md:flex-row gap-6 mb-8 items-center justify-between">
+                    <div className="flex p-1.5 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 w-full md:w-auto shadow-sm">
+                        <button
+                            onClick={() => setActiveTab("all")}
+                            className={`flex-1 md:flex-none px-8 py-3 rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2 ${activeTab === "all" ? "bg-white dark:bg-gray-700 text-emerald-600 shadow-lg scale-[1.02]" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                        >
+                            <LayoutGrid className="w-4 h-4" />
+                            All Products
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("mine")}
+                            disabled={!isAuthenticated}
+                            className={`flex-1 md:flex-none px-8 py-3 rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2 ${activeTab === "mine" ? "bg-white dark:bg-gray-700 text-emerald-600 shadow-lg scale-[1.02]" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"} disabled:opacity-50`}
+                        >
+                            <UserIcon className="w-4 h-4" />
+                            My Products
+                        </button>
+                    </div>
+
+                    {totalQuantity > 0 && (
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="px-6 py-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-2xl font-black text-sm flex items-center gap-3 border border-emerald-200 dark:border-emerald-800/50 shadow-lg shadow-emerald-500/10"
+                        >
+                            <ShoppingCart className="w-5 h-5" />
+                            {totalQuantity} Items in Cart
+                        </motion.div>
+                    )}
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     <div className="lg:col-span-1 space-y-6">
                         <div className="glass rounded-[2rem] p-6 sticky top-24 shadow-xl border border-white/20">
@@ -96,24 +143,30 @@ export default function Marketplace() {
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2 mb-2 block">Search</label>
+                                    <label className="text-xs font-black text-gray-600 uppercase tracking-widest pl-2 mb-2 block">Search</label>
                                     <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
                                         <input
                                             type="text"
                                             placeholder="Search produce..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
                                             className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-transparent focus:border-emerald-500 rounded-2xl text-sm transition-all shadow-inner"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2 mb-2 block">Categories</label>
+                                    <label className="text-xs font-black text-gray-600 uppercase tracking-widest pl-2 mb-2 block">Categories</label>
                                     <div className="space-y-2">
-                                        {["All", "Vegetables", "Fruits", "Grains", "Seeds", "Tools"].map(cat => (
-                                            <button key={cat} className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-sm font-medium transition-colors flex items-center justify-between group">
+                                        {["All", "Vegetables", "Fruits", "Grains", "Seeds", "Tools", "Other"].map(cat => (
+                                            <button
+                                                key={cat}
+                                                onClick={() => setSelectedCategory(cat)}
+                                                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-between group ${selectedCategory === cat ? "bg-emerald-500 text-white" : "hover:bg-emerald-50 dark:hover:bg-emerald-900/30"}`}
+                                            >
                                                 {cat}
-                                                <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                <ChevronRight className={`w-4 h-4 transition-opacity ${selectedCategory === cat ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} />
                                             </button>
                                         ))}
                                     </div>
@@ -126,11 +179,11 @@ export default function Marketplace() {
                         {loading ? (
                             <div className="flex flex-col items-center justify-center py-20 glass rounded-[3rem]">
                                 <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Fetching Fresh Harvest...</p>
+                                <p className="text-gray-600 font-bold uppercase tracking-widest text-xs">Fetching Fresh Harvest...</p>
                             </div>
-                        ) : products.length > 0 ? (
+                        ) : filteredProducts.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {products.map((product) => (
+                                {filteredProducts.map((product) => (
                                     <motion.div
                                         key={product._id}
                                         layout
@@ -145,7 +198,7 @@ export default function Marketplace() {
                                             />
                                             <div className="absolute top-4 right-4 px-4 py-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-2xl shadow-lg">
                                                 <span className="text-lg font-black text-emerald-600">रू{product.price}</span>
-                                                <span className="text-[10px] text-gray-400 ml-1 font-bold uppercase">/unit</span>
+                                                <span className="text-[10px] text-gray-600 ml-1 font-bold uppercase">/unit</span>
                                             </div>
                                             <div className="absolute top-4 left-4">
                                                 <div className="px-3 py-1 bg-emerald-500 text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg">
@@ -159,28 +212,40 @@ export default function Marketplace() {
                                                 <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                                                     <MapPin className="w-4 h-4 text-emerald-600" />
                                                 </div>
-                                                <span className="text-xs font-bold text-gray-500">{product.location}</span>
+                                                <span className="text-xs font-bold text-gray-600">{product.location}</span>
                                             </div>
 
                                             <h3 className="text-xl font-black mb-2 text-gray-900 dark:text-white group-hover:text-emerald-600 transition-colors">
                                                 {product.title}
                                             </h3>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-6 leading-relaxed">
+                                            <p className="text-sm text-gray-700 dark:text-gray-400 line-clamp-2 mb-6 leading-relaxed">
                                                 {product.description}
                                             </p>
 
                                             <div className="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-gray-800">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                                                        <Plus className="w-5 h-5 text-gray-400" />
+                                                        <Plus className="w-5 h-5 text-gray-600" />
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Seller</span>
+                                                        <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest pl-0.5">Seller</span>
                                                         <span className="text-sm font-black text-gray-700 dark:text-gray-200">{product.owner?.name}</span>
                                                     </div>
                                                 </div>
-                                                <button className="p-3 bg-emerald-500 text-white rounded-2xl shadow-lg hover:scale-110 transition-all">
-                                                    <ShoppingBag className="w-5 h-5" />
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        dispatch(addToCart({
+                                                            _id: product._id,
+                                                            title: product.title,
+                                                            price: product.price,
+                                                            image: product.image,
+                                                            category: product.category
+                                                        }));
+                                                    }}
+                                                    className="p-3 bg-emerald-500 text-white rounded-2xl shadow-lg hover:scale-110 transition-all active:scale-95 group/cart"
+                                                >
+                                                    <ShoppingBag className="w-5 h-5 group-hover/cart:rotate-12 transition-transform" />
                                                 </button>
                                             </div>
                                         </div>
@@ -189,9 +254,9 @@ export default function Marketplace() {
                             </div>
                         ) : (
                             <div className="text-center py-20 glass rounded-[3rem]">
-                                <ShoppingBag className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                                <h3 className="text-2xl font-black text-gray-400">No produce listed yet</h3>
-                                <p className="text-gray-500 mb-8 max-w-sm mx-auto">Be the first to list your fresh harvest on the Krishi Marketplace!</p>
+                                <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                <h3 className="text-2xl font-black text-gray-600">No produce listed yet</h3>
+                                <p className="text-gray-700 mb-8 max-w-sm mx-auto">Be the first to list your fresh harvest on the Krishi Marketplace!</p>
                                 <button
                                     onClick={() => setShowListingForm(true)}
                                     className="px-10 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-xl hover:scale-105 transition-all"
@@ -215,6 +280,6 @@ export default function Marketplace() {
                     />
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 }

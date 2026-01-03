@@ -16,6 +16,7 @@ export const sendMessage = async (req, res, next) => {
         });
 
         const io = getIO();
+        console.log(`Emitting newMessage to room: ${receiver}`);
         io.to(receiver).emit("newMessage", message);
 
         res.status(201).json({
