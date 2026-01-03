@@ -69,10 +69,17 @@ export default function Navbar() {
             ))}
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl">
-                  <User className="w-4 h-4 text-emerald-600" />
-                  <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{user?.name}</span>
-                </div>
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-bold text-xs">
+                    {user?.name?.charAt(0)}
+                  </div>
+                  <span className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[100px]">
+                    {user?.name}
+                  </span>
+                </Link>
                 <button
                   onClick={() => dispatch(logoutUser())}
                   className="p-2.5 text-gray-500 hover:text-red-500 transition-colors"

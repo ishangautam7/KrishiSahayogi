@@ -23,6 +23,10 @@ export const createProduct = async (req, res, next) => {
     try {
         req.body.owner = req.user.id;
 
+        if (req.file) {
+            req.body.image = req.file.path;
+        }
+
         const product = await Product.create(req.body);
 
         res.status(201).json({
