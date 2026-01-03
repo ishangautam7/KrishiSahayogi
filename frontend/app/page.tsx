@@ -45,13 +45,6 @@ export default function LandingPage() {
     },
   };
 
-  const stats = [
-    { label: "Active Farmers", value: "10,000+", icon: Users },
-    { label: "AI Accuracy", value: "95%", icon: Target },
-    { label: "Produce Sold", value: "500t+", icon: TrendingUp },
-    { label: "Verified Buyers", value: "2,500+", icon: ShieldCheck },
-  ];
-
   const features = [
     {
       title: "Yield Prediction",
@@ -126,13 +119,6 @@ export default function LandingPage() {
             variants={containerVariants}
             className="text-left z-10"
           >
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-bold mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              Now powered by GPT-4o
-            </motion.div>
             <motion.h1 variants={itemVariants} className="text-6xl sm:text-7xl lg:text-8xl font-black leading-tight mb-6">
               <span className="nepali-text block text-gray-900 dark:text-white mb-2">कृषि सहयोगी</span>
               <span className="gradient-text">Future of Farming</span>
@@ -149,22 +135,6 @@ export default function LandingPage() {
                 Explore Features
               </Link>
             </motion.div>
-
-
-
-            {/* Quick trust metrics */}
-            <motion.div variants={itemVariants} className="flex items-center gap-6 border-t border-gray-200 dark:border-gray-800 pt-8">
-              <div className="flex -space-x-4">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-900 bg-gray-200 overflow-hidden">
-                    <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" />
-                  </div >
-                ))}
-              </div >
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Joined by <span className="font-bold text-gray-900 dark:text-white">5,000+</span> daily active users
-              </p>
-            </motion.div >
           </motion.div >
 
           <motion.div
@@ -181,23 +151,6 @@ export default function LandingPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 to-transparent"></div>
             </div>
-
-            {/* Floating UI Elements */}
-            <motion.div
-              animate={{ y: [0, -20, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-10 -left-10 glass p-6 rounded-3xl z-20 shadow-xl"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                  <TrendingUp className="text-emerald-600 w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-bold uppercase">Growth</p>
-                  <p className="text-xl font-black text-gray-900 dark:text-white">+24.5%</p>
-                </div>
-              </div>
-            </motion.div>
 
             <motion.div
               animate={{ y: [0, 20, 0] }}
@@ -223,30 +176,6 @@ export default function LandingPage() {
 
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-gray-400 animate-bounce">
           <ChevronDown className="w-8 h-8" />
-        </div>
-      </section >
-
-      {/* Stats Section */}
-      < section className="py-20 relative px-4 sm:px-6 lg:px-8 overflow-hidden" >
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="text-center group"
-              >
-                <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
-                  <stat.icon className="w-6 h-6" />
-                </div>
-                <h3 className="text-4xl font-black text-gray-900 dark:text-white mb-2">{stat.value}</h3>
-                <p className="text-gray-500 dark:text-gray-400 font-medium uppercase text-xs tracking-widest">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section >
 
@@ -344,39 +273,6 @@ export default function LandingPage() {
         </div>
       </section >
 
-      {/* Testimonials/Community */}
-      < section className="py-32 px-4 sm:px-6 lg:px-8" >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">Farmer Success Stories</h2>
-            <p className="text-gray-500 dark:text-gray-400">Join a community of forward-thinking farmers</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="glass p-10 rounded-[3rem] relative">
-                <div className="mb-6 flex gap-1">
-                  {[1, 2, 3, 4, 5].map(s => (
-                    <CheckCircle2 key={s} className="w-5 h-5 text-emerald-500 fill-emerald-500" />
-                  ))}
-                </div>
-                <p className="text-lg text-gray-700 dark:text-gray-300 italic mb-8">
-                  &quot;The disease detection tool saved my tomato crop this season. I identify it in seconds and got the exact organic solution I needed.&quot;
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gray-200 overflow-hidden">
-                    <img src={`https://i.pravatar.cc/100?u=farmer${i}`} alt="Farmer" />
-                  </div>
-                  <div>
-                    <h5 className="font-bold text-gray-900 dark:text-white">Ramesh Thapa</h5>
-                    <p className="text-sm text-emerald-600 dark:text-emerald-400">Coffee Farmer, Ilam</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section >
 
       {/* Footer */}
       < footer className="bg-gray-900 dark:bg-black py-24 px-4 sm:px-6 lg:px-8" >
