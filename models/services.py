@@ -4,6 +4,14 @@ Contains business logic for model loading and predictions
 """
 import joblib
 import os
+import torch
+import torch.nn as nn
+from torchvision import transforms
+from PIL import Image
+from io import BytesIO
+import google.generativeai as genai
+from torch.serialization import add_safe_globals
+
 
 # Crop name mapping
 CROP_MAPPING = {
@@ -264,3 +272,227 @@ def validate_fertilizer_input_data(data):
         return False, 'All numeric fields must be valid numbers', None
     
     return True, None, converted_data
+
+
+
+class ResNet9(nn.Module):
+    """ResNet9 model for plant disease classification"""
+    def __init__(self, in_channels, num_classes):
+        super(ResNet9, self).__init__()
+
+        def conv_block(in_channels, out_channels, pool=False):
+            layers = [
+                nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
+                nn.BatchNorm2d(out_channels),
+                nn.ReLU(inplace=True)
+            ]
+            if pool:
+                layers.append(nn.MaxPool2d(2))
+            return nn.Sequential(*layers)
+
+        self.conv1 = conv_block(in_channels, 64)
+        self.conv2 = conv_block(64, 128, pool=True)
+
+        self.res1 = nn.Sequential(
+            conv_block(128, 128),
+            conv_block(128, 128)
+        )
+
+        self.conv3 = conv_block(128, 256, pool=True)
+        self.conv4 = conv_block(256, 512, pool=True)
+
+        self.res2 = nn.Sequential(
+            conv_block(512, 512),
+            conv_block(512, 512)
+        )
+
+        self.classifier = nn.Sequential(
+            nn.MaxPool2d(4),
+            nn.Flatten(),
+            nn.Linear(512 * 4 * 4, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.res1(x) + x
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.res2(x) + x
+        return self.classifier(x)
+
+
+add_safe_globals([ResNet9])
+
+# Also register in __main__ module to handle pickled references
+import sys
+sys.modules['__main__'].ResNet9 = ResNet9
+
+
+DISEASE_CLASS_NAMES = {
+    0: 'Apple___Apple_scab',
+    1: 'Apple___Black_rot',
+    2: 'Apple___Cedar_apple_rust',
+    3: 'Apple___healthy',
+    4: 'Blueberry___healthy',
+    5: 'Cherry_(including_sour)___Powdery_mildew',
+    6: 'Cherry_(including_sour)___healthy',
+    7: 'Corn_(maize)___Cercospora_leaf_spot_Gray_leaf_spot',
+    8: 'Corn_(maize)___Common_rust_',
+    9: 'Corn_(maize)___Northern_Leaf_Blight',
+    10: 'Corn_(maize)___healthy',
+    11: 'Grape___Black_rot',
+    12: 'Grape___Esca_(Black_Measles)',
+    13: 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
+    14: 'Grape___healthy',
+    15: 'Orange___Haunglongbing_(Citrus_greening)',
+    16: 'Peach___Bacterial_spot',
+    17: 'Peach___healthy',
+    18: 'Pepper,_bell___Bacterial_spot',
+    19: 'Pepper,_bell___healthy',
+    20: 'Potato___Early_blight',
+    21: 'Potato___Late_blight',
+    22: 'Potato___healthy',
+    23: 'Raspberry___healthy',
+    24: 'Soybean___healthy',
+    25: 'Squash___Powdery_mildew',
+    26: 'Strawberry___Leaf_scorch',
+    27: 'Strawberry___healthy',
+    28: 'Tomato___Bacterial_spot',
+    29: 'Tomato___Early_blight',
+    30: 'Tomato___Late_blight',
+    31: 'Tomato___Leaf_Mold',
+    32: 'Tomato___Septoria_leaf_spot',
+    33: 'Tomato___Spider_mites_Two-spotted_spider_mite',
+    34: 'Tomato___Target_Spot',
+    35: 'Tomato___Tomato_Yellow_Leaf_Curl_Virus',
+    36: 'Tomato___Tomato_mosaic_virus',
+    37: 'Tomato___healthy'
+}
+
+
+_disease_model = None
+_disease_transform = None
+
+
+def load_disease_model():
+    """Load the plant disease detection model"""
+    global _disease_model, _disease_transform
+    
+    if _disease_model is None:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(base_dir, "models", "plant-disease-model-complete.pth")
+        
+        _disease_model = torch.load(
+            model_path,
+            map_location="cpu",
+            weights_only=False
+        )
+        _disease_model.eval()
+        
+        _disease_transform = transforms.Compose([
+            transforms.Resize((256, 256)),
+            transforms.ToTensor()
+        ])
+        
+        print(f"✓ Disease detection model loaded successfully from {model_path}")
+    
+    return _disease_model, _disease_transform
+
+
+def predict_disease(image_bytes):
+    """
+    Predict plant disease from image bytes
+    
+    Args:
+        image_bytes: Image file bytes
+    
+    Returns:
+        dict: Contains disease name and formatted display name
+    """
+    model, transform = load_disease_model()
+    
+    # Open and preprocess image
+    image = Image.open(BytesIO(image_bytes)).convert("RGB")
+    img_tensor = transform(image).unsqueeze(0)
+    
+    # Make prediction
+    with torch.no_grad():
+        output = model(img_tensor)
+        _, predicted = torch.max(output, 1)
+    
+    disease_index = predicted.item()
+    disease_name = DISEASE_CLASS_NAMES.get(disease_index, f'Unknown disease (index: {disease_index})')
+    
+    display_name = disease_name.replace('___', ' - ').replace('_', ' ')
+    
+    return {
+        'disease': disease_name,
+        'display_name': display_name,
+        'disease_index': disease_index
+    }
+
+
+def get_disease_solution(disease_name, api_key=None):
+    """
+    Get treatment solution for a plant disease using Google Gemini
+    
+    Args:
+        disease_name: Name of the disease
+        api_key: Google Gemini API key
+    
+    Returns:
+        dict: Contains solution text and metadata
+    """
+    # Check if plant is healthy - no solution needed
+    if 'healthy' in disease_name.lower():
+        return {
+            'success': True,
+            'solution': '',
+            'disease': disease_name.replace('___', ' - ').replace('_', ' ')
+        }
+    
+    if not api_key:
+        api_key = os.getenv('GEMINI_API_KEY')
+    
+    if not api_key:
+        return {
+            'success': False,
+            'error': 'Google Gemini API key not provided. Please set GEMINI_API_KEY environment variable.'
+        }
+    
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
+        
+        formatted_disease = disease_name.replace('___', ' - ').replace('_', ' ')
+        
+        prompt = f"""You are an agricultural expert. A farmer's plant has: {formatted_disease}
+
+Provide ONLY actionable steps in this exact format:
+
+What to do now:
+• [Step 1]
+• [Step 2]
+• [Step 3]
+
+Prevention:
+• [Prevention tip 1]
+• [Prevention tip 2]
+
+Keep it brief, practical, and farmer-friendly. Use bullet points only."""
+        
+        response = model.generate_content(prompt)
+        
+        return {
+            'success': True,
+            'solution': response.text,
+            'disease': formatted_disease
+        }
+    
+    except Exception as e:
+        return {
+            'success': False,
+            'error': f'Error generating solution: {str(e)}'
+        }
+

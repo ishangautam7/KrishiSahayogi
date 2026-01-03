@@ -8,6 +8,7 @@ import productRoutes from "./routes/product.routes.js";
 import postRoutes from "./routes/post.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import messageRoutes from "./routes/message.routes.js";
+import diseaseRoutes from "./routes/disease.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
 
 const app = express();
@@ -29,6 +30,7 @@ app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/post", postRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/message", messageRoutes);
+app.use("/api/v1/disease", diseaseRoutes);
 
 // Error Handler
 app.use(errorHandler);
