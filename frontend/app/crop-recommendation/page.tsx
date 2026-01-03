@@ -79,7 +79,16 @@ export default function CropRecommendationPage() {
         setError(null);
         setResult(null);
         try {
-            const res = await axios.post(`${ML_API_URL}/predict_crop`, cropForm);
+            const payload = {
+                n: Number(cropForm.N),
+                p: Number(cropForm.P),
+                k: Number(cropForm.K),
+                temp: Number(cropForm.temperature),
+                humidity: Number(cropForm.humidity),
+                ph: Number(cropForm.ph),
+                rainfall: Number(cropForm.rainfall)
+            };
+            const res = await axios.post(`${ML_API_URL}/predict_crop`, payload);
             setResult({ type: "crop", data: res.data });
         } catch (err: any) {
             setError(err.response?.data?.message || "Failed to get crop recommendation. Make sure ML server is running.");
@@ -94,7 +103,17 @@ export default function CropRecommendationPage() {
         setError(null);
         setResult(null);
         try {
-            const res = await axios.post(`${ML_API_URL}/predict_fertilizer`, fertiForm);
+            const payload = {
+                temp: Number(fertiForm.Temperature),
+                humidity: Number(fertiForm.Humidity),
+                moisture: Number(fertiForm.Moisture),
+                soil_type: fertiForm.Soil_Type,
+                crop_type: fertiForm.Crop_Type,
+                nitrogen: Number(fertiForm.Nitrogen),
+                potassium: Number(fertiForm.Potassium),
+                phosphorus: Number(fertiForm.Phosphorous)
+            };
+            const res = await axios.post(`${ML_API_URL}/predict_fertilizer`, payload);
             setResult({ type: "fertilizer", data: res.data });
         } catch (err: any) {
             setError(err.response?.data?.message || "Failed to get fertilizer prediction. Make sure ML server is running.");
@@ -306,7 +325,7 @@ export default function CropRecommendationPage() {
 
                                     <div className="mb-10">
                                         <h2 className="text-6xl md:text-8xl font-black text-gray-900 dark:text-white capitalize tracking-tighter mb-4">
-                                            {result.data.prediction || result.data.result}
+                                            {result.type === "crop" ? result.data.crop : result.data.fertilizer}
                                         </h2>
                                         <p className="text-gray-500 dark:text-gray-400 text-lg font-medium max-w-md mx-auto">
                                             Our AI analysis predicts this will yield the best results for your current environmental parameters.

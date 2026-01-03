@@ -42,7 +42,8 @@ def load_crop_prediction_model():
     """
     global _crop_recommendation_model
     if _crop_recommendation_model is None:
-        model_path = r"C:\Users\isang\Desktop\TBD\models\models\crop_prediction_model.pkl"
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(base_dir, "models", "crop_prediction_model.pkl")
         _crop_recommendation_model = joblib.load(model_path)
         print(f"✓ Model loaded successfully from {model_path}")
     return _crop_recommendation_model
@@ -131,12 +132,13 @@ def load_fertilizer_model():
     global _fertilizer_model, _fertilizer_scaler
     
     if _fertilizer_model is None:
-        model_path = r"C:\Users\isang\Desktop\TBD\models\models\fertilizer_recomendation_model.pkl"
-        scaler_path = r"C:\Users\isang\Desktop\TBD\models\models\fertilizer_recomendation_scaler.pkl"
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(base_dir, "models", "fertilizer_recomendation_model.pkl")
+        scaler_path = os.path.join(base_dir, "models", "fertilizer_recomendation_scaler.pkl")
         
         _fertilizer_model = joblib.load(model_path)
         _fertilizer_scaler = joblib.load(scaler_path)
-        print(f"✓ Fertilizer model and scaler loaded successfully")
+        print(f"✓ Fertilizer model and scaler loaded successfully from {model_path}")
     
     return _fertilizer_model, _fertilizer_scaler
 
