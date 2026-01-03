@@ -3,16 +3,25 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users } from "lucide-react";
+import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users, Sun, Moon } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
+import { useTheme } from "next-themes";
 import { RootState, AppDispatch } from "@/store/store";
 import { logoutUser } from "@/store/slices/authSlice";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { language, setLanguage, t } = useLanguage();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,10 +32,9 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Marketplace", href: "/marketplace", icon: ShoppingCart },
-    { name: "AI Features", href: "/crop-recommendation", icon: Brain },
-    { name: "Networking", href: "/networking", icon: Users },
-    { name: "Plantation Guide", href: "/guide", icon: BookOpen },
+    { name: t("marketplace"), href: "/marketplace", icon: ShoppingCart },
+    { name: t("ai_features"), href: "/crop-recommendation", icon: Brain },
+    { name: t("community_network"), href: "/farmer-network", icon: Users },
   ];
 
   return (
@@ -68,13 +76,39 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-emerald-500 transition-all shadow-sm"
+              aria-label="Toggle theme"
+            >
+              {mounted && (theme === "dark" ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-emerald-600" />)}
+            </button>
+
+            {/* Language Switcher */}
+            <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+              <button
+                onClick={() => setLanguage("en")}
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${language === "en" ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20" : "text-gray-500 hover:text-emerald-500"}`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLanguage("ne")}
+                className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${language === "ne" ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20" : "text-gray-500 hover:text-emerald-500"}`}
+              >
+                नेपाली
+              </button>
+            </div>
+
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
                 <Link
                   href="/profile"
                   className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-bold text-xs">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-bold text-xs shadow-lg">
                     {user?.name?.charAt(0)}
                   </div>
                   <span className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[100px]">
@@ -90,7 +124,7 @@ export default function Navbar() {
               </div>
             ) : (
               <Link href="/login" className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 hover:scale-105">
-                Login / Join
+                {t("login_join")}
               </Link>
             )}
           </div>
@@ -129,12 +163,22 @@ export default function Navbar() {
                 </Link>
               ))}
               <hr className="border-gray-200 dark:border-gray-700" />
+              <div className="flex items-center justify-between px-4 py-2">
+                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Theme</span>
+                <button
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="p-3 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-emerald-500 transition-all"
+                >
+                  {mounted && (theme === "dark" ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-emerald-600" />)}
+                </button>
+              </div>
+              <hr className="border-gray-200 dark:border-gray-700" />
               <Link
                 href="/login"
                 onClick={() => setIsOpen(false)}
                 className="w-full py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold rounded-xl shadow-lg text-center"
               >
-                Login / Join
+                {t("login_join")}
               </Link>
             </div>
           </motion.div>

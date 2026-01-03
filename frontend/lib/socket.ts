@@ -9,17 +9,20 @@ export const socket = io(SOCKET_URL, {
 
 export const connectSocket = (userId: string) => {
     if (!socket.connected) {
+        console.log("Connecting socket...");
         socket.connect();
     }
 
-    // Always listen for connect to join, covering initial and reconnects
+    // Use .off to avoid multiple listeners if connectSocket is called multiple times
+    socket.off("connect");
     socket.on("connect", () => {
-        console.log("Socket connected:", socket.id);
+        console.log("Socket connected! ID:", socket.id);
+        console.log("Emitting join with userId:", userId);
         socket.emit("join", userId);
     });
 
-    // If already connected, emit join immediately as well (idempotent-ish)
     if (socket.connected) {
+        console.log("Socket already connected. Emitting join with userId:", userId);
         socket.emit("join", userId);
     }
 };

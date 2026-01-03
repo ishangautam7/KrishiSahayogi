@@ -1,12 +1,13 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, ShoppingBag, MapPin, Tag, Filter, CheckCircle2, ChevronRight, X } from "lucide-react";
+import { Plus, Search, ShoppingBag, MapPin, Tag, Filter, CheckCircle2, ChevronRight, X, LayoutGrid, User as UserIcon, ShoppingCart } from "lucide-react";
 import { useState, useEffect } from "react";
 import apiClient from "@/lib/axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import ProductListingForm from "@/components/Marketplace/ProductListingForm";
+import { addToCart } from "@/store/slices/cartSlice";
 
 interface Product {
     _id: string;
@@ -27,10 +28,13 @@ export default function Marketplace() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [showListingForm, setShowListingForm] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeTab, setActiveTab] = useState<"all" | "mine">("all");
+    const dispatch = useDispatch();
 
-    const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { totalQuantity } = useSelector((state: RootState) => state.cart);
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -53,7 +57,8 @@ export default function Marketplace() {
             product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
             product.location.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = selectedCategory === "All" || product.category.toLowerCase() === selectedCategory.toLowerCase();
-        return matchesSearch && matchesCategory;
+        const matchesTab = activeTab === "all" || (activeTab === "mine" && product.owner?._id === user?._id);
+        return matchesSearch && matchesCategory && matchesTab;
     });
 
     return (
@@ -96,7 +101,38 @@ export default function Marketplace() {
                     </div>
                 </div>
 
-                {/* Discovery & Search */}
+                {/* Tabs & Search */}
+                <div className="flex flex-col md:flex-row gap-6 mb-8 items-center justify-between">
+                    <div className="flex p-1.5 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 w-full md:w-auto shadow-sm">
+                        <button
+                            onClick={() => setActiveTab("all")}
+                            className={`flex-1 md:flex-none px-8 py-3 rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2 ${activeTab === "all" ? "bg-white dark:bg-gray-700 text-emerald-600 shadow-lg scale-[1.02]" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                        >
+                            <LayoutGrid className="w-4 h-4" />
+                            All Products
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("mine")}
+                            disabled={!isAuthenticated}
+                            className={`flex-1 md:flex-none px-8 py-3 rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2 ${activeTab === "mine" ? "bg-white dark:bg-gray-700 text-emerald-600 shadow-lg scale-[1.02]" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"} disabled:opacity-50`}
+                        >
+                            <UserIcon className="w-4 h-4" />
+                            My Products
+                        </button>
+                    </div>
+
+                    {totalQuantity > 0 && (
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="px-6 py-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-2xl font-black text-sm flex items-center gap-3 border border-emerald-200 dark:border-emerald-800/50 shadow-lg shadow-emerald-500/10"
+                        >
+                            <ShoppingCart className="w-5 h-5" />
+                            {totalQuantity} Items in Cart
+                        </motion.div>
+                    )}
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     <div className="lg:col-span-1 space-y-6">
                         <div className="glass rounded-[2rem] p-6 sticky top-24 shadow-xl border border-white/20">
@@ -196,8 +232,20 @@ export default function Marketplace() {
                                                         <span className="text-sm font-black text-gray-700 dark:text-gray-200">{product.owner?.name}</span>
                                                     </div>
                                                 </div>
-                                                <button className="p-3 bg-emerald-500 text-white rounded-2xl shadow-lg hover:scale-110 transition-all">
-                                                    <ShoppingBag className="w-5 h-5" />
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        dispatch(addToCart({
+                                                            _id: product._id,
+                                                            title: product.title,
+                                                            price: product.price,
+                                                            image: product.image,
+                                                            category: product.category
+                                                        }));
+                                                    }}
+                                                    className="p-3 bg-emerald-500 text-white rounded-2xl shadow-lg hover:scale-110 transition-all active:scale-95 group/cart"
+                                                >
+                                                    <ShoppingBag className="w-5 h-5 group-hover/cart:rotate-12 transition-transform" />
                                                 </button>
                                             </div>
                                         </div>
@@ -232,6 +280,6 @@ export default function Marketplace() {
                     />
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 }

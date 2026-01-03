@@ -9,7 +9,7 @@ import { addLocalMessage } from "@/store/slices/messageSlice";
 
 export default function AuthLoader({ children }: { children: React.ReactNode }) {
     const dispatch = useDispatch<AppDispatch>();
-    const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { user, isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         dispatch(loadUser());
@@ -17,10 +17,11 @@ export default function AuthLoader({ children }: { children: React.ReactNode }) 
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            connectSocket(user.id);
+            connectSocket(user._id);
 
             socket.on("newMessage", (message) => {
-                dispatch(addLocalMessage(message));
+                console.log("New message received via socket:", message);
+                dispatch(addLocalMessage({ message, currentUserId: user._id }));
             });
 
             return () => {
@@ -30,6 +31,17 @@ export default function AuthLoader({ children }: { children: React.ReactNode }) 
             disconnectSocket();
         }
     }, [isAuthenticated, user, dispatch]);
+
+    if (isLoading && !user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-gray-500 font-bold animate-pulse">Krishi Sahayogi...</p>
+                </div>
+            </div>
+        );
+    }
 
     return <>{children}</>;
 }
