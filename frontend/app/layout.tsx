@@ -3,6 +3,8 @@ import { Inter, Noto_Sans_Devanagari } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ReduxProvider } from "@/store/provider";
+import { LanguageProvider } from "@/context/LanguageContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import AuthLoader from "@/components/AuthLoader";
 
 const inter = Inter({
@@ -32,10 +34,19 @@ export default function RootLayout({
         className={`${inter.variable} ${notoSansDevanagari.variable} antialiased`}
       >
         <ReduxProvider>
-          <AuthLoader>
-            <Navbar />
-            {children}
-          </AuthLoader>
+          <LanguageProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AuthLoader>
+                <Navbar />
+                {children}
+              </AuthLoader>
+            </ThemeProvider>
+          </LanguageProvider>
         </ReduxProvider>
 
       </body>

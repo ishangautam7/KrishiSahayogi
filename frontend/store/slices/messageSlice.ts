@@ -54,14 +54,51 @@ const messageSlice = createSlice({
         clearMessageError: (state) => {
             state.error = null;
         },
-        addLocalMessage: (state, action: PayloadAction<Message>) => {
-            const { sender, receiver } = action.payload;
-            const otherUser = state.conversations[sender] ? sender : receiver;
+        addLocalMessage: (state, action: PayloadAction<any>) => {
+            let message: Message | null = null;
+            let currentUserId: string | null = null;
+
+            if (action.payload?.message && action.payload?.currentUserId) {
+                // New format: { message, currentUserId }
+                message = action.payload.message;
+                currentUserId = action.payload.currentUserId;
+            } else if (action.payload?.sender && action.payload?.receiver) {
+                // Old format: direct message object
+                message = action.payload;
+                // Try to infer currentUserId if possible, or we might need to skip this part
+                // but if it's the old format, we don't have currentUserId easily accessible here.
+            }
+
+            if (!message) {
+                console.error("addLocalMessage: Could not extract message from payload", action.payload);
+                return;
+            }
+
+            const { sender, receiver } = message;
+
+            // If we don't have currentUserId, we can't determine which side the conversation is on
+            // unless we use a different logic. Let's try to handle it.
+            let otherUser: string | null = null;
+            if (currentUserId) {
+                otherUser = sender === currentUserId ? receiver : sender;
+            } else {
+                // Fallback: If we don't know who "I" am, we can't reliably update the conversation list.
+                // However, we can try to find an existing conversation.
+                // For now, let's just log and return if we can't determine the other user.
+                console.warn("addLocalMessage: currentUserId missing, skipping update.");
+                return;
+            }
+
+            if (!otherUser) return;
 
             if (!state.conversations[otherUser]) {
                 state.conversations[otherUser] = [];
             }
-            state.conversations[otherUser].push(action.payload);
+            // Avoid duplicates just in case
+            const exists = state.conversations[otherUser].some(m => m._id === message?._id);
+            if (!exists) {
+                state.conversations[otherUser].push(message);
+            }
         },
     },
     extraReducers: (builder) => {
