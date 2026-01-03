@@ -64,7 +64,7 @@ export default function LandingPage() {
         icon: BarChart3,
         color: "emerald",
         image: "/assets/images/Yield.png",
-        link: "/crop-recommendation"
+        link: "/fertilizer-prediction"
       },
       {
         title: t("crop_recommendation"),
@@ -83,6 +83,14 @@ export default function LandingPage() {
         link: "/disease-detection"
       },
       {
+        title: t("plantation_guide"),
+        desc: "Expert cultivation advice for Nepal's most vital crops. From seed to harvest.",
+        icon: BookOpen,
+        color: "amber",
+        image: "/assets/images/Plantation.png",
+        link: "/plantation-guide"
+      },
+      {
         title: t("community_network"),
         desc: "Connect with local experts, share wisdom, and grow your community.",
         icon: Users,
@@ -97,13 +105,6 @@ export default function LandingPage() {
         color: "rose",
         image: "/assets/images/Marketplace.png",
         link: "/marketplace"
-      }, {
-        title: t("plantation_guide"),
-        desc: "Get step-by-step guidance for planting crops and growing your farm.",
-        icon: BarChart3,
-        color: "emerald",
-        image: "/assets/images/Plantation.png",
-        link: "/guide"
       }
     ];
 

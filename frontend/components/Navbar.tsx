@@ -34,6 +34,7 @@ export default function Navbar() {
   const navLinks = [
     { name: t("marketplace"), href: "/marketplace", icon: ShoppingCart },
     { name: t("ai_features"), href: "/crop-recommendation", icon: Brain },
+    { name: t("plantation_guide"), href: "/plantation-guide", icon: BookOpen },
     { name: t("community_network"), href: "/farmer-network", icon: Users },
   ];
 
