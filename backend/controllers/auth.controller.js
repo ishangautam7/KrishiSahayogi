@@ -13,7 +13,7 @@ const sendToken = (user, statusCode, res) => {
     res.status(statusCode).cookie("token", token, options).json({
         success: true,
         user: {
-            id: user._id,
+            _id: user._id, // Standardize on _id
             name: user.name,
             email: user.email,
             phone: user.phone,
