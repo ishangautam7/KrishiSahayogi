@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import passport from "passport";
+import configurePassport from "./config/passport.js";
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import postRoutes from "./routes/post.routes.js";
@@ -16,6 +18,10 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+
+// Initialize Passport
+configurePassport();
+app.use(passport.initialize());
 
 // Routes
 app.use("/api/v1/auth", authRoutes);
