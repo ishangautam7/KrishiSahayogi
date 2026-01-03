@@ -1,6 +1,4 @@
 import express from "express";
-import { getFarmers, getNearbyFarmers } from "../controllers/user.controller.js";
-import { protect, optionalProtect } from "../middlewares/auth.middleware.js";
 import { getFarmers, getNearbyFarmers, updateProfile } from "../controllers/user.controller.js";
 import { protect,optionalProtect } from "../middlewares/auth.middleware.js";
 

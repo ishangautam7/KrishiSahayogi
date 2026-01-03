@@ -14,12 +14,13 @@ export const initSocket = (server) => {
         console.log("A user connected:", socket.id);
 
         socket.on("join", (userId) => {
+            console.log(`Attempting to join room: ${userId}`);
             socket.join(userId);
             console.log(`User ${userId} joined their private room`);
         });
 
         socket.on("disconnect", () => {
-            console.log("User disconnected");
+            console.log("User disconnected:", socket.id);
         });
     });
 
