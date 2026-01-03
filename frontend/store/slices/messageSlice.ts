@@ -54,14 +54,22 @@ const messageSlice = createSlice({
         clearMessageError: (state) => {
             state.error = null;
         },
-        addLocalMessage: (state, action: PayloadAction<Message>) => {
-            const { sender, receiver } = action.payload;
-            const otherUser = state.conversations[sender] ? sender : receiver;
+        addLocalMessage: (state, action: PayloadAction<{ message: Message; currentUserId: string }>) => {
+            const { message, currentUserId } = action.payload;
+            const { sender, receiver } = message;
+
+            // If I am the sender, the other user is the receiver.
+            // If I am the receiver, the other user is the sender.
+            const otherUser = sender === currentUserId ? receiver : sender;
 
             if (!state.conversations[otherUser]) {
                 state.conversations[otherUser] = [];
             }
-            state.conversations[otherUser].push(action.payload);
+            // Avoid duplicates just in case
+            const exists = state.conversations[otherUser].some(m => m._id === message._id);
+            if (!exists) {
+                state.conversations[otherUser].push(message);
+            }
         },
     },
     extraReducers: (builder) => {
