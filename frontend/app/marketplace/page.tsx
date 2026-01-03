@@ -96,9 +96,9 @@ export default function Marketplace() {
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2 mb-2 block">Search</label>
+                                    <label className="text-xs font-black text-gray-600 uppercase tracking-widest pl-2 mb-2 block">Search</label>
                                     <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
                                         <input
                                             type="text"
                                             placeholder="Search produce..."
@@ -108,7 +108,7 @@ export default function Marketplace() {
                                 </div>
 
                                 <div>
-                                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2 mb-2 block">Categories</label>
+                                    <label className="text-xs font-black text-gray-600 uppercase tracking-widest pl-2 mb-2 block">Categories</label>
                                     <div className="space-y-2">
                                         {["All", "Vegetables", "Fruits", "Grains", "Seeds", "Tools"].map(cat => (
                                             <button key={cat} className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-sm font-medium transition-colors flex items-center justify-between group">
@@ -126,7 +126,7 @@ export default function Marketplace() {
                         {loading ? (
                             <div className="flex flex-col items-center justify-center py-20 glass rounded-[3rem]">
                                 <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Fetching Fresh Harvest...</p>
+                                <p className="text-gray-600 font-bold uppercase tracking-widest text-xs">Fetching Fresh Harvest...</p>
                             </div>
                         ) : products.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -145,7 +145,7 @@ export default function Marketplace() {
                                             />
                                             <div className="absolute top-4 right-4 px-4 py-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-2xl shadow-lg">
                                                 <span className="text-lg font-black text-emerald-600">रू{product.price}</span>
-                                                <span className="text-[10px] text-gray-400 ml-1 font-bold uppercase">/unit</span>
+                                                <span className="text-[10px] text-gray-600 ml-1 font-bold uppercase">/unit</span>
                                             </div>
                                             <div className="absolute top-4 left-4">
                                                 <div className="px-3 py-1 bg-emerald-500 text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg">
@@ -159,23 +159,23 @@ export default function Marketplace() {
                                                 <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                                                     <MapPin className="w-4 h-4 text-emerald-600" />
                                                 </div>
-                                                <span className="text-xs font-bold text-gray-500">{product.location}</span>
+                                                <span className="text-xs font-bold text-gray-600">{product.location}</span>
                                             </div>
 
                                             <h3 className="text-xl font-black mb-2 text-gray-900 dark:text-white group-hover:text-emerald-600 transition-colors">
                                                 {product.title}
                                             </h3>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-6 leading-relaxed">
+                                            <p className="text-sm text-gray-700 dark:text-gray-400 line-clamp-2 mb-6 leading-relaxed">
                                                 {product.description}
                                             </p>
 
                                             <div className="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-gray-800">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                                                        <Plus className="w-5 h-5 text-gray-400" />
+                                                        <Plus className="w-5 h-5 text-gray-600" />
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Seller</span>
+                                                        <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest pl-0.5">Seller</span>
                                                         <span className="text-sm font-black text-gray-700 dark:text-gray-200">{product.owner?.name}</span>
                                                     </div>
                                                 </div>
@@ -189,9 +189,9 @@ export default function Marketplace() {
                             </div>
                         ) : (
                             <div className="text-center py-20 glass rounded-[3rem]">
-                                <ShoppingBag className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                                <h3 className="text-2xl font-black text-gray-400">No produce listed yet</h3>
-                                <p className="text-gray-500 mb-8 max-w-sm mx-auto">Be the first to list your fresh harvest on the Krishi Marketplace!</p>
+                                <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                <h3 className="text-2xl font-black text-gray-600">No produce listed yet</h3>
+                                <p className="text-gray-700 mb-8 max-w-sm mx-auto">Be the first to list your fresh harvest on the Krishi Marketplace!</p>
                                 <button
                                     onClick={() => setShowListingForm(true)}
                                     className="px-10 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-xl hover:scale-105 transition-all"
