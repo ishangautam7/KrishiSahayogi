@@ -1,45 +1,83 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Microscope, Camera, Upload, ShieldCheck } from "lucide-react";
+import { Brain, Microscope } from "lucide-react";
 
 export default function DiseaseDetectionPage() {
     return (
-        <main className="min-h-screen pt-32 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto text-center">
-                <div className="mb-12">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-black mb-6 uppercase tracking-widest">
-                        <Microscope className="w-4 h-4" /> Instant Diagnostics
-                    </div>
-                    <h1 className="text-4xl sm:text-7xl font-black text-gray-900 dark:text-white mb-6">Disease Detection</h1>
-                    <p className="text-xl text-gray-700 dark:text-gray-400">Snap or upload a photo of your crop to identify pests, fungus, or nutrient deficiencies instantly.</p>
+        <main className="min-h-screen pt-32 pb-20 px-4 relative overflow-hidden bg-slate-50 dark:bg-gray-950">
+            {/* Background Decorations */}
+            <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-emerald-200/20 dark:bg-emerald-900/10 rounded-full blur-[120px] -z-10 animate-pulse-soft"></div>
+            <div className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-[100px] -z-10"></div>
+
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="text-center mb-16">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-black uppercase tracking-widest mb-6 border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-md"
+                    >
+                        <Brain className="w-4 h-4" /> AI Powered Agriculture
+                    </motion.div>
+                    <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">
+                        Disease <span className="text-emerald-500">Detection</span>
+                    </h1>
+                    <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium leading-relaxed">
+                        Identify plant pathologies instantly using computer vision and receive expert treatment plans.
+                    </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 mb-12">
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        className="glass p-12 rounded-[3.5rem] flex flex-col items-center gap-6 group hover:border-red-200 dark:hover:border-red-900/50 transition-all"
+                <div className="max-w-xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="glass p-12 rounded-[3.5rem] shadow-2xl border border-white/20 text-center relative overflow-hidden"
                     >
-                        <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <Camera className="w-10 h-10 text-red-600" />
-                        </div>
-                        <span className="text-2xl font-black text-gray-900 dark:text-white">Take Photo</span>
-                    </motion.button>
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 via-green-400 to-emerald-500"></div>
 
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        className="glass p-12 rounded-[3.5rem] flex flex-col items-center gap-6 group hover:border-emerald-200 dark:hover:border-emerald-900/50 transition-all font-bold"
-                    >
-                        <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <Upload className="w-10 h-10 text-emerald-600" />
+                        <div className="w-32 h-32 bg-emerald-50 dark:bg-emerald-900/30 rounded-[2.5rem] flex items-center justify-center mb-10 mx-auto shadow-inner group">
+                            <Microscope className="w-16 h-16 text-emerald-500 animate-pulse" />
                         </div>
-                        <span className="text-2xl font-black text-gray-900 dark:text-white">Upload Gallery</span>
-                    </motion.button>
-                </div>
 
-                <div className="glass p-12 rounded-[3rem] border-dashed border-2 border-gray-200 dark:border-gray-800">
-                    <ShieldCheck className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                    <p className="text-gray-600 font-medium italic">Our AI model can detect over 50+ common crop diseases in Nepal with 95% accuracy.</p>
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600 dark:text-emerald-400 mb-6 bg-emerald-100 dark:bg-emerald-900/40 px-6 py-2 rounded-full inline-block leading-none">
+                            Next-Gen Vision AI
+                        </h3>
+
+                        <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-6">
+                            Currently In Training
+                        </h2>
+
+                        <p className="text-gray-500 dark:text-gray-400 text-lg font-medium mb-10 leading-relaxed text-center">
+                            Our plant disease detection model is being optimized for localized crop varieties. This feature will be available in the web portal soon.
+                        </p>
+
+                        <div className="space-y-4">
+                            <div className="h-3 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: "85%" }}
+                                    transition={{ duration: 1.5, ease: "easeOut" }}
+                                    className="h-full bg-gradient-to-r from-emerald-500 to-green-400"
+                                ></motion.div>
+                            </div>
+                            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                                <span className="text-emerald-600">Model Training</span>
+                                <span className="text-gray-400">85% Complete</span>
+                            </div>
+                        </div>
+
+                        <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800">
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Available soon for</p>
+                            <div className="flex flex-wrap justify-center gap-3">
+                                {['Wheat', 'Rice', 'Tomato', 'Potato', 'Maize'].map(crop => (
+                                    <span key={crop} className="px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-lg text-[10px] font-black text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-700 italic">
+                                        #{crop}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </motion.div>
                 </div>
             </div>
         </main>
