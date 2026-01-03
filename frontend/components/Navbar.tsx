@@ -82,7 +82,7 @@ export default function Navbar() {
               </div>
             ) : (
               <Link href="/login" className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 hover:scale-105">
-                Login / Join
+                Login
               </Link>
             )}
           </div>
@@ -126,7 +126,7 @@ export default function Navbar() {
                 onClick={() => setIsOpen(false)}
                 className="w-full py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold rounded-xl shadow-lg text-center"
               >
-                Login / Join
+                Login
               </Link>
             </div>
           </motion.div>
