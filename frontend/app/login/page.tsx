@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { LogIn, Mail, Lock, ArrowRight, Github } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, clearError } from "@/store/slices/authSlice";
+import { loginUser, loadUser, clearError } from "@/store/slices/authSlice";
 import { RootState, AppDispatch } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -23,9 +23,64 @@ export default function LoginPage() {
         }
     }, [isAuthenticated, router]);
 
+    // Initialize Google Identity Services
+    useEffect(() => {
+        // Load Google GSI script
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+
+        script.onload = () => {
+            if (window.google) {
+                window.google.accounts.id.initialize({
+                    client_id: 'ADD_CLIENT_ID',
+                    callback: handleGoogleResponse,
+                });
+            }
+        };
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
+    const handleGoogleResponse = async (response: any) => {
+        try {
+            // Send the credential token to backend
+            const res = await fetch('http://localhost:7000/api/v1/auth/google/callback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    credential: response.credential,
+                }),
+            });
+
+            if (res.ok) {
+                // Load user data
+                await dispatch(loadUser()).unwrap();
+                router.push('/');
+            } else {
+                console.error('Google sign-in failed');
+            }
+        } catch (error) {
+            console.error('Error during Google sign-in:', error);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         dispatch(loginUser({ email, password }));
+    };
+
+    const handleGoogleLogin = () => {
+        if (window.google) {
+            window.google.accounts.id.prompt();
+        }
     };
 
     return (
@@ -105,7 +160,11 @@ export default function LoginPage() {
                     </div>
 
                     <div className="mt-8 grid grid-cols-1 gap-4">
-                        <button className="flex items-center justify-center gap-3 py-4 glass rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all font-bold text-gray-700 dark:text-gray-200">
+                        <button
+                            onClick={handleGoogleLogin}
+                            type="button"
+                            className="flex items-center justify-center gap-3 py-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-bold text-gray-900 dark:text-white shadow-sm"
+                        >
                             <svg className="w-5 h-5" viewBox="0 0 24 24">
                                 <path
                                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -124,7 +183,7 @@ export default function LoginPage() {
                                     fill="#EA4335"
                                 />
                             </svg>
-                            Google
+                            Log In with Google
                         </button>
                     </div>
 
