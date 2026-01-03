@@ -49,50 +49,56 @@ export default function LandingPage() {
 
 
 
-  const features = [
-    {
-      title: "Yield Prediction",
-      desc: "Advanced AI models to forecast your harvest accurately based on soil and weather.",
-      icon: BarChart3,
-      color: "emerald",
-      image: "/assets/images/Yield.png"
-    },
-    {
-      title: "Crop Recommendation",
-      desc: "Personalized suggestions for what to plant next to maximize your season's profit.",
-      icon: Sprout,
-      color: "green",
-      image: "/assets/images/Crop.png"
-    },
-    {
-      title: "Disease Detection",
-      desc: "Snap a photo and get instant diagnosis and organic treatment solutions.",
-      icon: Microscope,
-      color: "teal",
-      image: "/assets/images/Disease.png"
-    },
-    {
-      title: "Farmer Network",
-      desc: "Connect with local experts, share wisdom, and grow your community.",
-      icon: Users,
-      color: "blue",
-      image: "/assets/images/Farmer.png"
-    },
-    {
-      title: "Plantation Guide",
-      desc: "Smart schedules and maintenance tips tailored for your specific environment.",
-      icon: MapPin,
-      color: "amber",
-      image: "/assets/images/Plantation.png"
-    },
-    {
-      title: "Marketplace",
-      desc: "Direct farm-to-table access. Sell your produce at fair prices with no middlemen.",
-      icon: ShoppingBag,
-      color: "rose",
-      image: "/assets/images/Marketplace.png"
-    }
-  ];
+  const features: {
+    title: string;
+    desc: string;
+    icon: any;
+    color: string;
+    image: string;
+    link: string;
+    comingSoon?: boolean;
+  }[] = [
+      {
+        title: t("fertilizer_prediction"),
+        desc: "Advanced AI models to forecast the perfect fertilizer mix for your soil and crops.",
+        icon: BarChart3,
+        color: "emerald",
+        image: "/assets/images/Yield.png",
+        link: "/crop-recommendation"
+      },
+      {
+        title: t("crop_recommendation"),
+        desc: "Personalized suggestions for what to plant next to maximize your season's profit.",
+        icon: Sprout,
+        color: "green",
+        image: "/assets/images/Crop.png",
+        link: "/crop-recommendation"
+      },
+      {
+        title: t("disease_detection"),
+        desc: "Snap a photo and get instant diagnosis and organic treatment solutions.",
+        icon: Microscope,
+        color: "teal",
+        image: "/assets/images/Disease.png",
+        link: "/crop-recommendation"
+      },
+      {
+        title: t("community_network"),
+        desc: "Connect with local experts, share wisdom, and grow your community.",
+        icon: Users,
+        color: "blue",
+        image: "/assets/images/Farmer.png",
+        link: "/farmer-network"
+      },
+      {
+        title: t("marketplace"),
+        desc: "Direct farm-to-table access. Sell your produce at fair prices with no middlemen.",
+        icon: ShoppingBag,
+        color: "rose",
+        image: "/assets/images/Marketplace.png",
+        link: "/marketplace"
+      }
+    ];
 
   const steps = [
     {
@@ -207,31 +213,39 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="group relative p-8 rounded-[2.5rem] bg-white dark:bg-gray-900 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-900/50 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/10 overflow-hidden"
-              >
-                <div className="relative z-10">
+              <Link href={feature.link} key={idx} className={feature.comingSoon ? "cursor-not-allowed" : ""}>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="group relative p-8 rounded-[2.5rem] bg-white dark:bg-gray-900 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-900/50 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/10 overflow-hidden h-full"
+                >
+                  <div className="relative z-10">
+                    <div className="flex justify-between items-start mb-6">
+                      {feature.comingSoon && (
+                        <span className="px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest">
+                          Soon
+                        </span>
+                      )}
+                    </div>
 
-                  <h4 className="text-2xl font-black text-gray-900 dark:text-white mb-4 group-hover:text-emerald-600 transition-colors">{feature.title}</h4>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
-                    {feature.desc}
-                  </p>
-                  <div className="w-full aspect-video rounded-3xl overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    <img
-                      src={feature.image}
-                      alt={feature.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
+                    <h4 className="text-2xl font-black text-gray-900 dark:text-white mb-4 group-hover:text-emerald-600 transition-colors uppercase tracking-tight">{feature.title}</h4>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
+                      {feature.desc}
+                    </p>
+                    <div className="w-full aspect-video rounded-3xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+                      <img
+                        src={feature.image}
+                        alt={feature.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    </div>
                   </div>
-                </div>
-                {/* Decorative element */}
-                <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-emerald-600/5 rounded-full blur-3xl group-hover:bg-emerald-600/10 transition-colors"></div>
-              </motion.div>
+                  {/* Decorative element */}
+                  <div className={`absolute -bottom-12 -right-12 w-32 h-32 bg-${feature.color}-600/5 rounded-full blur-3xl group-hover:bg-${feature.color}-600/10 transition-colors`}></div>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>

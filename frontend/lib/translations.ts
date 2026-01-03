@@ -42,6 +42,11 @@ export const translations = {
         search: "Search",
         filter: "Filter",
         location: "Location",
+
+        // Predictors
+        fertilizer_prediction: "Fertilizer Prediction",
+        crop_recommendation: "Crop Recommendation",
+        disease_detection: "Disease Detection",
     },
     ne: {
         // Navbar
@@ -86,6 +91,11 @@ export const translations = {
         search: "खोज्नुहोस्",
         filter: "फिल्टर",
         location: "स्थान",
+
+        // Predictors
+        fertilizer_prediction: "मल सिफारिस",
+        crop_recommendation: "बाली सिफारिस",
+        disease_detection: "रोग पहिचान",
     }
 };
 
