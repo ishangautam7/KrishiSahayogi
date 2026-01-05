@@ -31,8 +31,9 @@ export default function LoginScreen() {
 
         try {
             await dispatch(login({ email, password })).unwrap();
-            router.replace('/(tabs)');
+            router.replace('/');
         } catch (err) {
+            console.log(err)
             Alert.alert('Login Failed', err as string);
         }
     };

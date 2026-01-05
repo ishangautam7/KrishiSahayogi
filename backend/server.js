@@ -17,7 +17,7 @@ import errorHandler from "./middlewares/error.middleware.js";
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: true, // Allow any origin for development purposes
     credentials: true,
 }));
 app.use(express.json());
