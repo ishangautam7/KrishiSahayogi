@@ -11,10 +11,7 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@google/generative-ai": "^0.24.1",
-=======
->>>>>>> 6ad8092987c6f2c85308bb539bd414b51e66823e
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^1.41.3",
