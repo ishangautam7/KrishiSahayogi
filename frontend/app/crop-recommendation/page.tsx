@@ -203,9 +203,7 @@ export default function CropRecommendationPage() {
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">
                         Crop <span className="text-emerald-500">Suggestion</span>
                     </h1>
-                    <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium leading-relaxed">
-                        Harness the power of machine learning to discover the perfect crop for your soil and environment.
-                    </p>
+                   
                 </div>
 
                 <div className="grid lg:grid-cols-12 gap-10">

@@ -127,7 +127,7 @@ const fetchDoanepalNotices = async () => {
             noticeBoardUrl = 'https://doanepal.gov.np/ne/notice-board/15/2024/1439342/';
         }
 
-        console.log(`Fetching notices from: ${noticeBoardUrl}`);
+        // console.log(`Fetching notices from: ${noticeBoardUrl}`);
 
         const response = await axios.get(noticeBoardUrl, {
             headers: {

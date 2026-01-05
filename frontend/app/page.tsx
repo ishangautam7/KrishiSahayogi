@@ -24,6 +24,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useLanguage } from "@/context/LanguageContext";
+import WeatherWidget from "@/components/WeatherWidget";
 
 export default function LandingPage() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -177,12 +178,10 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 to-transparent"></div>
             </div>
 
-
-
             <motion.div
-              animate={{ y: [0, 20, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute -bottom-10 -right-10 glass p-6 rounded-3xl z-20 shadow-xl"
+              animate={{ y: [0, -20, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute -top-10 -left-10 glass p-6 rounded-3xl z-20 shadow-xl"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
@@ -211,12 +210,17 @@ export default function LandingPage() {
       {/* Features Section */}
       < section id="features" className="py-32 bg-gray-50/50 dark:bg-gray-950/50 relative px-4 sm:px-6 lg:px-8" >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-sm font-black text-emerald-600 uppercase tracking-[0.3em] mb-4">Core Ecosystem</h2>
-            <h3 className="text-4xl sm:text-6xl font-black text-gray-900 dark:text-white mb-6">Designed for Every Farmer</h3>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Our comprehensive suite of tools leverages cutting-edge technology to solve traditional farming challenges.
-            </p>
+          <div className="flex flex-col lg:flex-row items-end justify-between mb-24 gap-12">
+            <div className="text-center lg:text-left max-w-3xl">
+              <h2 className="text-sm font-black text-emerald-600 uppercase tracking-[0.3em] mb-4">Core Ecosystem</h2>
+              <h3 className="text-4xl sm:text-6xl font-black text-gray-900 dark:text-white mb-6">Designed for Every Farmer</h3>
+              <p className="text-xl text-gray-600 dark:text-gray-400">
+                Our comprehensive suite of tools leverages cutting-edge technology to solve traditional farming challenges.
+              </p>
+            </div>
+            <div className="w-full max-w-sm flex-shrink-0">
+              <WeatherWidget />
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
