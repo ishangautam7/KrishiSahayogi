@@ -47,6 +47,7 @@ export const translations = {
         fertilizer_prediction: "Fertilizer Prediction",
         crop_recommendation: "Crop Recommendation",
         disease_detection: "Disease Detection",
+        yield_prediction: "Yield Prediction",
 
         // Plantation Guide
         plantation_manual: "Plantation Manual",
@@ -118,6 +119,7 @@ export const translations = {
         fertilizer_prediction: "मल सिफारिस",
         crop_recommendation: "बाली सिफारिस",
         disease_detection: "रोग पहिचान",
+        yield_prediction: "उत्पादन पूर्वानुमान",
 
         // Plantation Guide
         plantation_manual: "रोपण म्यानुअल",
