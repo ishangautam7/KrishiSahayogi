@@ -84,13 +84,6 @@ export default function PlantationGuidePage() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                     <div className="max-w-2xl">
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-black uppercase tracking-widest mb-6"
-                        >
-                            <BookOpen className="w-4 h-4" /> Comprehensive Guide
-                        </motion.div>
                         <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
                             Plantation <span className="text-emerald-500">Manual</span>
                         </h1>

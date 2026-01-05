@@ -5,7 +5,7 @@ export const translations = {
         ai_features: "AI Features",
         plantation_guide: "Plantation Guide",
         community_network: "Community Network",
-        login_join: "Login / Join",
+        login_join: "Login",
         logout: "Logout",
         profile: "My Profile",
 
@@ -54,7 +54,7 @@ export const translations = {
         ai_features: "AI सुविधाहरू",
         plantation_guide: "रोपण निर्देशिका",
         community_network: "समुदाय नेटवर्क",
-        login_join: "लगइन / सामेल हुनुहोस्",
+        login_join: "लगइन",
         logout: "लगआउट",
         profile: "मेरो प्रोफाइल",
 

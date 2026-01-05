@@ -5,10 +5,12 @@ import {
     Sprout, Brain, MapPin, Cloudy, Thermometer,
     Droplets, FlaskConical, Beaker, Waves,
     ChevronRight, CheckCircle2, AlertCircle,
-    Info, Wind, Sun
+    Info, Wind, Sun, Edit3, HelpCircle
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import SoilQuestionnaire from "@/components/SoilQuestionnaire";
+import CompactResultModal from "@/components/CompactResultModal";
 
 const ML_API_URL = "http://localhost:5000";
 
@@ -25,6 +27,19 @@ export default function CropRecommendationPage() {
     const [cropForm, setCropForm] = useState({
         N: "", P: "", K: "", temperature: "", humidity: "", ph: "", rainfall: ""
     });
+
+    // Location auto-fill states
+    const [locationFetching, setLocationFetching] = useState(false);
+    const [locationCoords, setLocationCoords] = useState<{ lat: number; lon: number } | null>(null);
+
+    // Questionnaire states
+    const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+
+    // AI Tips states
+    const [aiTips, setAiTips] = useState<string[]>([]);
+    const [loadingTips, setLoadingTips] = useState(false);
+    const [showResultModal, setShowResultModal] = useState(false);
+    const [showMethodSelector, setShowMethodSelector] = useState(false);
 
     useEffect(() => {
         if ("geolocation" in navigator) {
@@ -63,11 +78,71 @@ export default function CropRecommendationPage() {
         return "Thunderstorm";
     };
 
+    const handleUseLocation = async () => {
+        if (!("geolocation" in navigator)) {
+            setError("Geolocation is not supported by your browser");
+            return;
+        }
+
+        setLocationFetching(true);
+        setError(null);
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                setLocationCoords({ lat: latitude, lon: longitude });
+
+                try {
+                    const response = await axios.get(
+                        `http://localhost:7000/api/v1/location/environmental-data?lat=${latitude}&lon=${longitude}`
+                    );
+
+                    if (response.data.success) {
+                        const { weather, location } = response.data;
+
+                        // Auto-fill only weather-related fields
+                        // NPK and pH should be filled via questionnaire or manual entry
+                        setCropForm({
+                            ...cropForm,
+                            temperature: weather.temperature.toString(),
+                            humidity: weather.humidity.toString(),
+                            rainfall: weather.rainfall.toString()
+                        });
+
+                        setLocationName(location.name);
+                    }
+                } catch (err: any) {
+                    console.error("Failed to fetch location data:", err);
+                    setError("Failed to fetch environmental data. Please try again or enter values manually.");
+                } finally {
+                    setLocationFetching(false);
+                }
+            },
+            (err) => {
+                console.error("Geolocation error:", err);
+                setLocationFetching(false);
+                setError("Location access denied. Please enable location permissions or enter values manually.");
+            }
+        );
+    };
+
+    const handleQuestionnaireComplete = (values: { N: number; P: number; K: number; pH: number }) => {
+        setCropForm({
+            ...cropForm,
+            N: values.N.toString(),
+            P: values.P.toString(),
+            K: values.K.toString(),
+            ph: values.pH.toString()
+        });
+        setShowQuestionnaire(false);
+    };
+
     const handleCropSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
         setResult(null);
+        setAiTips([]);
         try {
             const payload = {
                 n: Number(cropForm.N),
@@ -80,10 +155,41 @@ export default function CropRecommendationPage() {
             };
             const res = await axios.post(`${ML_API_URL}/predict_crop`, payload);
             setResult(res.data);
+            setShowResultModal(true);
+
+            // Fetch AI tips
+            fetchAITips(res.data.crop, payload);
         } catch (err: any) {
             setError(err.response?.data?.message || "Failed to get crop recommendation. Make sure ML server is running.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchAITips = async (crop: string, soilData: any) => {
+        setLoadingTips(true);
+        try {
+            const response = await axios.post('http://localhost:7000/api/v1/ai/crop-tips', {
+                crop,
+                soilData: {
+                    N: soilData.n,
+                    P: soilData.p,
+                    K: soilData.k,
+                    pH: soilData.ph
+                },
+                climate: {
+                    temperature: soilData.temp,
+                    humidity: soilData.humidity,
+                    rainfall: soilData.rainfall
+                }
+            });
+            if (response.data.success) {
+                setAiTips(response.data.tips);
+            }
+        } catch (err) {
+            console.error('Failed to fetch AI tips:', err);
+        } finally {
+            setLoadingTips(false);
         }
     };
 
@@ -94,13 +200,6 @@ export default function CropRecommendationPage() {
 
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-black uppercase tracking-widest mb-6 border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-md"
-                    >
-                        <Brain className="w-4 h-4" /> AI Powered Agriculture
-                    </motion.div>
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">
                         Crop <span className="text-emerald-500">Suggestion</span>
                     </h1>
@@ -130,6 +229,41 @@ export default function CropRecommendationPage() {
                                     <div className="col-span-2">
                                         <InputGroup label="Rainfall (mm)" value={cropForm.rainfall} onChange={(v) => setCropForm({ ...cropForm, rainfall: v })} icon={<Waves className="w-4 h-4" />} />
                                     </div>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4 mb-4">
+                                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Auto-Fill Options</p>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={handleUseLocation}
+                                            disabled={locationFetching}
+                                            className="py-3 px-2 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 active:scale-95 transition-all disabled:opacity-50 text-xs"
+                                        >
+                                            {locationFetching ? (
+                                                <div className="flex flex-col items-center gap-1.5">
+                                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                    <span className="text-[10px]">Detecting...</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center gap-1">
+                                                    <div className="text-[15px] opacity-80">Temp • Humidity • Rainfall</div>
+                                                </div>
+                                            )}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowQuestionnaire(true)}
+                                            className="py-3 px-2 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-600 active:scale-95 transition-all text-xs"
+                                        >
+                                            <div className="flex flex-col items-center gap-1">
+                                                <div className="text-[15px] opacity-80">N • P • K • pH</div>
+                                            </div>
+                                        </button>
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 text-center italic">
+                                        or enter manually above
+                                    </p>
                                 </div>
 
                                 <button
@@ -268,6 +402,28 @@ export default function CropRecommendationPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Questionnaire Modal */}
+            <AnimatePresence>
+                {showQuestionnaire && (
+                    <SoilQuestionnaire
+                        onComplete={handleQuestionnaireComplete}
+                        onClose={() => setShowQuestionnaire(false)}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Result Modal with AI Tips */}
+            {result && (
+                <CompactResultModal
+                    isOpen={showResultModal}
+                    onClose={() => setShowResultModal(false)}
+                    title="Recommended Crop"
+                    recommendation={result.crop}
+                    aiTips={aiTips}
+                    isLoadingTips={loadingTips}
+                />
+            )}
         </main>
     );
 }

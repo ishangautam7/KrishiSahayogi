@@ -6,7 +6,6 @@ const PYTHON_SERVER_URL = process.env.PYTHON_SERVER_URL || 'http://localhost:500
 
 export const predictDisease = async (req, res) => {
     try {
-        // Check if file is uploaded
         if (!req.file) {
             return res.status(400).json({
                 success: false,
@@ -14,14 +13,12 @@ export const predictDisease = async (req, res) => {
             });
         }
 
-        // Create form data to send to Python server
         const formData = new FormData();
         formData.append('image', req.file.buffer, {
             filename: req.file.originalname,
             contentType: req.file.mimetype
         });
 
-        // Forward request to Python server
         const response = await axios.post(
             `${PYTHON_SERVER_URL}/predict_disease`,
             formData,
@@ -32,13 +29,11 @@ export const predictDisease = async (req, res) => {
             }
         );
 
-        // Return prediction result
         res.json(response.data);
     } catch (error) {
         console.error('Disease prediction error:', error);
 
         if (error.response) {
-            // Python server returned an error
             return res.status(error.response.status).json(error.response.data);
         }
 
@@ -49,9 +44,7 @@ export const predictDisease = async (req, res) => {
     }
 };
 
-/**
- * Get AI-generated solution for a plant disease
- */
+
 export const getDiseaseSolution = async (req, res) => {
     try {
         const { disease_name, api_key } = req.body;
@@ -63,7 +56,6 @@ export const getDiseaseSolution = async (req, res) => {
             });
         }
 
-        // Forward request to Python server
         const response = await axios.post(
             `${PYTHON_SERVER_URL}/get_disease_solution`,
             {

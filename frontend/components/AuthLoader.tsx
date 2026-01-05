@@ -4,8 +4,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadUser } from "@/store/slices/authSlice";
 import { AppDispatch, RootState } from "@/store/store";
-import { connectSocket, disconnectSocket, socket } from "@/lib/socket";
-import { addLocalMessage } from "@/store/slices/messageSlice";
 
 export default function AuthLoader({ children }: { children: React.ReactNode }) {
     const dispatch = useDispatch<AppDispatch>();
@@ -15,22 +13,7 @@ export default function AuthLoader({ children }: { children: React.ReactNode }) 
         dispatch(loadUser());
     }, [dispatch]);
 
-    useEffect(() => {
-        if (isAuthenticated && user) {
-            connectSocket(user._id);
-
-            socket.on("newMessage", (message) => {
-                console.log("New message received via socket:", message);
-                dispatch(addLocalMessage({ message, currentUserId: user._id }));
-            });
-
-            return () => {
-                socket.off("newMessage");
-            };
-        } else {
-            disconnectSocket();
-        }
-    }, [isAuthenticated, user, dispatch]);
+    // Socket connection removed from here - now only connects on /networking page
 
     if (isLoading && !user) {
         return (
