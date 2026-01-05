@@ -31,8 +31,7 @@ export default function FarmerNetwork() {
     useEffect(() => {
         const fetchFarmers = async () => {
             try {
-                const endpoint = isAuthenticated ? "/user/nearby" : "/user";
-                const response = await apiClient.get(endpoint);
+                const response = await apiClient.get("/user");
                 setFarmers(response.data.farmers);
             } catch (error) {
                 console.error("Failed to fetch farmers", error);
@@ -42,7 +41,7 @@ export default function FarmerNetwork() {
         };
 
         fetchFarmers();
-    }, [isAuthenticated]);
+    });
 
     const filteredFarmers = farmers.filter(farmer => {
         const matchesSearch = farmer.name.toLowerCase().includes(searchQuery.toLowerCase());
