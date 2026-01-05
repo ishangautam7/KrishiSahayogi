@@ -47,6 +47,28 @@ export const translations = {
         fertilizer_prediction: "Fertilizer Prediction",
         crop_recommendation: "Crop Recommendation",
         disease_detection: "Disease Detection",
+
+        // Plantation Guide
+        plantation_manual: "Plantation Manual",
+        plantation_subtitle: "Expert cultivation advice for Nepal's most vital crops. From seed to harvest, optimize your farming practices.",
+        search_crops: "Search crops (e.g., Rice, Wheat)...",
+        all_categories: "All Categories",
+        all_seasons: "All Seasons",
+        no_guide_found: "No specific guide found for",
+        generate_ai: "Generate Guide with AI",
+        consulting_ai: "Consulting Agricultural AI...",
+        overview: "Overview",
+        best_practices: "Best Practices",
+        growth_requirements: "Growth Requirements",
+        temperature: "Temperature",
+        rainfall: "Annual Rainfall",
+        soil_quality: "Soil Quality",
+        growing_season: "Growing Season",
+        typical_duration: "Typical Duration",
+        download_sop: "Download Full SOP",
+        need_advice: "Need specific advice?",
+        advice_subtitle: "Use our AI predictors to get customized recommendations for your specific soil data and location.",
+        run_diagnosis: "Run Diagnosis",
     },
     ne: {
         // Navbar
@@ -96,6 +118,28 @@ export const translations = {
         fertilizer_prediction: "मल सिफारिस",
         crop_recommendation: "बाली सिफारिस",
         disease_detection: "रोग पहिचान",
+
+        // Plantation Guide
+        plantation_manual: "रोपण म्यानुअल",
+        plantation_subtitle: "नेपालका सबैभन्दा महत्त्वपूर्ण बालीहरूको लागि विशेषज्ञ खेती सल्लाह। बीउदेखि फसलसम्म, आफ्नो खेती अभ्यासहरू अनुकूलित गर्नुहोस्।",
+        search_crops: "बाली खोज्नुहोस् (जस्तै, धान, गहुँ)...",
+        all_categories: "सबै वर्ग",
+        all_seasons: "सबै मौसम",
+        no_guide_found: "को लागि कुनै विशेष गाइड भेटिएन",
+        generate_ai: "AI संग गाइड उत्पन्न गर्नुहोस्",
+        consulting_ai: "कृषि AI सँग परामर्श गर्दै...",
+        overview: "सामान्य जानकारी",
+        best_practices: "उत्तम अभ्यासहरू",
+        growth_requirements: "वृद्धि आवश्यकताहरू",
+        temperature: "तापक्रम",
+        rainfall: "वार्षिक वर्षा",
+        soil_quality: "माटोको गुणस्तर",
+        growing_season: "खेती मौसम",
+        typical_duration: "सामान्य अवधि",
+        download_sop: "पूर्ण SOP डाउनलोड गर्नुहोस्",
+        need_advice: "विशेष सल्लाह चाहियो?",
+        advice_subtitle: "तपाईंको विशिष्ट माटो डेटा र स्थानको लागि अनुकूलित सिफारिसहरू प्राप्त गर्न हाम्रो AI पूर्वानुमानकर्ताहरू प्रयोग गर्नुहोस्।",
+        run_diagnosis: "निदान चलाउनुहोस्",
     }
 };
 
