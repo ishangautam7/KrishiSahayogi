@@ -326,9 +326,7 @@ export default function PlantationGuidePage() {
                                     </div>
                                 </div>
 
-                                <button className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black text-sm hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
-                                    {t('download_sop')} <ChevronRight className="w-4 h-4" />
-                                </button>
+                                
                             </div>
 
                             <div className="glass p-8 rounded-[3rem] bg-emerald-600 text-white shadow-xl relative overflow-hidden">
