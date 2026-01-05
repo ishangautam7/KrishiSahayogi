@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users, Sun, Moon, ChevronDown, Microscope, BarChart3,FileText } from "lucide-react";
+import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users, Sun, Moon, ChevronDown, Microscope, BarChart3, FileText } from "lucide-react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { logoutUser } from "@/store/slices/authSlice";
 import { useLanguage } from "@/context/LanguageContext";
+
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +20,7 @@ export default function Navbar() {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { language, setLanguage, t } = useLanguage();
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -30,6 +33,8 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (pathname === '/notices') return null;
 
   /* 
     Updated Navbar:

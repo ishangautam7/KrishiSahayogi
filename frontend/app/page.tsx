@@ -178,7 +178,7 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 to-transparent"></div>
             </div>
 
-            <motion.div
+            {/* <motion.div
               animate={{ y: [0, -20, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
               className="absolute -top-10 -left-10 glass p-6 rounded-3xl z-20 shadow-xl"
@@ -192,7 +192,7 @@ export default function LandingPage() {
                   <p className="text-xl font-black text-gray-900 dark:text-white">Optimal</p>
                 </div>
               </div>
-            </motion.div>
+            </motion.div> */}
           </motion.div>
         </div >
 

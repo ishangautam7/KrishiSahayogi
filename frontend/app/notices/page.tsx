@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import apiClient from '@/lib/axios';
-import { Calendar, ExternalLink, FileText, Bell } from 'lucide-react';
+import { Calendar, ExternalLink, FileText, Bell, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Notice {
     type: string;
@@ -16,6 +17,7 @@ interface Notice {
 }
 
 const NoticesPage = () => {
+    const router = useRouter();
     const [notices, setNotices] = useState<Notice[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'all' | 'notice' | 'subsidy'>('all');
@@ -45,8 +47,15 @@ const NoticesPage = () => {
 
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 p-6 md:p-12">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 p-6 md:p-12 relative">
+            <button
+                onClick={() => router.back()}
+                className="absolute top-6 left-6 md:top-8 md:left-12 flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-black/20 backdrop-blur-md rounded-xl text-green-800 dark:text-green-100 font-bold hover:bg-white/80 dark:hover:bg-black/30 transition-all shadow-sm z-50 cursor-pointer"
+            >
+                <ArrowLeft size={20} />
+                <span>Back</span>
+            </button>
+            <div className="max-w-7xl mx-auto pt-16 md:pt-12">
                 <header className="mb-12 text-center">
                     <motion.h1
                         initial={{ opacity: 0, y: -20 }}
