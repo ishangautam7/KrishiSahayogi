@@ -3,20 +3,20 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users, Sun, Moon } from "lucide-react";
+import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users, Sun, Moon, ChevronDown, Microscope, BarChart3,FileText } from "lucide-react";
+
 import { useSelector, useDispatch } from "react-redux";
-import { useTheme } from "next-themes";
 import { RootState, AppDispatch } from "@/store/store";
 import { logoutUser } from "@/store/slices/authSlice";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAiDropdownOpen, setIsAiDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { language, setLanguage, t } = useLanguage();
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -31,11 +31,27 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  /* 
+    Updated Navbar:
+    - Removed theme toggle (dark mode forced elsewhere).
+    - Added Notices link.
+  */
   const navLinks = [
     { name: t("marketplace"), href: "/marketplace", icon: ShoppingCart },
-    { name: t("ai_features"), href: "/crop-recommendation", icon: Brain },
-    { name: t("plantation_guide"), href: "/plantation-guide", icon: BookOpen },
+    {
+      name: t("ai_features"),
+      icon: Brain,
+      isDropdown: true,
+      features: [
+        { name: t("fertilizer_prediction"), href: "/fertilizer-prediction", icon: Leaf, color: "text-emerald-500" },
+        { name: t("crop_recommendation"), href: "/crop-recommendation", icon: Brain, color: "text-green-500" },
+        { name: t("disease_detection"), href: "/disease-detection", icon: Microscope, color: "text-teal-500" },
+        { name: t("plantation_guide"), href: "/plantation-guide", icon: BookOpen, color: "text-amber-500" },
+        { name: t("yield_prediction"), href: "/yield-prediction", icon: BarChart3, color: "text-blue-500" },
+      ]
+    },
     { name: t("community_network"), href: "/farmer-network", icon: Users },
+    { name: "Notice", href: "/notices", icon: FileText }, // Added Notice link
   ];
 
   return (
@@ -68,24 +84,60 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-sm font-bold text-gray-800 dark:text-gray-100 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-2"
-              >
-                <link.icon className="w-4 h-4" />
-                {link.name}
-              </Link>
-            ))}
+              link.isDropdown ? (
+                <div
+                  key={link.name}
+                  className="relative"
+                  onMouseEnter={() => setIsAiDropdownOpen(true)}
+                  onMouseLeave={() => setIsAiDropdownOpen(false)}
+                >
+                  <button className="text-sm font-bold text-gray-800 dark:text-gray-100 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-2 py-2">
+                    <link.icon className="w-4 h-4" />
+                    {link.name}
+                    <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isAiDropdownOpen ? "rotate-180" : ""}`} />
+                  </button>
 
-            {/* Theme Toggle */}
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-emerald-500 transition-all shadow-sm"
-              aria-label="Toggle theme"
-            >
-              {mounted && (theme === "dark" ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-emerald-600" />)}
-            </button>
+                  <AnimatePresence>
+                    {isAiDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute left-0 mt-2 w-72 p-4 bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-gray-800 z-50"
+                      >
+                        <div className="space-y-2">
+                          {link.features?.map((feature) => (
+                            <Link
+                              key={feature.href}
+                              href={feature.href}
+                              onClick={() => setIsAiDropdownOpen(false)}
+                              className="flex items-center gap-3 p-3 rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all group"
+                            >
+                              <div className={`w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center group-hover:scale-110 transition-transform ${feature.color}`}>
+                                <feature.icon className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-black text-gray-900 dark:text-white">{feature.name}</p>
+                                <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Launch Tool</p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-sm font-bold text-gray-800 dark:text-gray-100 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-2"
+                >
+                  <link.icon className="w-4 h-4" />
+                  {link.name}
+                </Link>
+              )
+            ))}
 
             {/* Language Switcher */}
             <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -153,27 +205,41 @@ export default function Navbar() {
           >
             <div className="glass rounded-2xl p-4 flex flex-col gap-4">
               {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 transition-colors"
-                >
-                  <link.icon className="w-5 h-5 text-emerald-500" />
-                  <span className="font-medium">{link.name}</span>
-                </Link>
+                <div key={link.name}>
+                  {link.isDropdown ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 px-4 py-3 text-emerald-600 dark:text-emerald-400 font-black uppercase text-[10px] tracking-widest bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                        <link.icon className="w-4 h-4" />
+                        {link.name}
+                      </div>
+                      <div className="grid grid-cols-1 gap-2 pl-4">
+                        {link.features?.map((feature) => (
+                          <Link
+                            key={feature.href}
+                            href={feature.href}
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 transition-colors"
+                          >
+                            <feature.icon className={`w-5 h-5 ${feature.color}`} />
+                            <span className="font-medium">{feature.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 transition-colors font-bold"
+                    >
+                      <link.icon className="w-5 h-5 text-emerald-500" />
+                      <span>{link.name}</span>
+                    </Link>
+                  )}
+                </div>
               ))}
               <hr className="border-gray-200 dark:border-gray-700" />
-              <div className="flex items-center justify-between px-4 py-2">
-                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Theme</span>
-                <button
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="p-3 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-emerald-500 transition-all"
-                >
-                  {mounted && (theme === "dark" ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-emerald-600" />)}
-                </button>
-              </div>
-              <hr className="border-gray-200 dark:border-gray-700" />
+
               <Link
                 href="/login"
                 onClick={() => setIsOpen(false)}
