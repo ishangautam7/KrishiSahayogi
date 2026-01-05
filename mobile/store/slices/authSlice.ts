@@ -35,13 +35,14 @@ export const login = createAsyncThunk(
             const response = await api.login(credentials);
             const { token, user } = response.data;
 
-            // Save to AsyncStorage
-            await AsyncStorage.setItem('authToken', token);
-            await AsyncStorage.setItem('user', JSON.stringify(user));
+            // Save to AsyncStorage only if values exist
+            if (token) await AsyncStorage.setItem('authToken', token);
+            if (user) await AsyncStorage.setItem('user', JSON.stringify(user));
 
             return { token, user };
         } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || 'Login failed 1');
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Login failed');
         }
     }
 );
@@ -53,8 +54,8 @@ export const register = createAsyncThunk(
             const response = await api.register(userData);
             const { token, user } = response.data;
 
-            await AsyncStorage.setItem('authToken', token);
-            await AsyncStorage.setItem('user', JSON.stringify(user));
+            if (token) await AsyncStorage.setItem('authToken', token);
+            if (user) await AsyncStorage.setItem('user', JSON.stringify(user));
 
             return { token, user };
         } catch (error: any) {

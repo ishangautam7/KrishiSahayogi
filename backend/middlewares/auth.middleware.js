@@ -16,7 +16,7 @@ export const protect = async (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "default_secret_for_development_replace_immediately");
         req.user = await User.findById(decoded._id);
         next();
     } catch (error) {
@@ -37,7 +37,7 @@ export const optionalProtect = async (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "default_secret_for_development_replace_immediately");
         req.user = await User.findById(decoded._id);
         next();
     } catch (error) {

@@ -13,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '@/lib/api';
 import { useAppSelector } from '@/store/hooks';
+import { router } from 'expo-router';
 
 interface Farmer {
     _id: string;
@@ -62,10 +63,10 @@ export default function NetworkScreen() {
     });
 
     const renderFarmer = ({ item }: { item: Farmer }) => {
-        const crops = Array.isArray(item.primaryCrops) 
-            ? item.primaryCrops 
-            : typeof item.primaryCrops === 'string' 
-                ? [item.primaryCrops] 
+        const crops = Array.isArray(item.primaryCrops)
+            ? item.primaryCrops
+            : typeof item.primaryCrops === 'string'
+                ? [item.primaryCrops]
                 : [];
 
         return (
@@ -94,7 +95,10 @@ export default function NetworkScreen() {
                     ))}
                 </View>
 
-                <TouchableOpacity style={styles.chatButton}>
+                <TouchableOpacity
+                    style={styles.chatButton}
+                    onPress={() => router.push(`/messages/${item._id}`)}
+                >
                     <Ionicons name="chatbubble-ellipses-outline" size={20} color="#fff" />
                     <Text style={styles.chatButtonText}>Start Conversation</Text>
                 </TouchableOpacity>
@@ -121,7 +125,7 @@ export default function NetworkScreen() {
                         onChangeText={setSearchQuery}
                     />
                 </View>
-                
+
                 <View style={[styles.searchBar, { marginTop: 8 }]}>
                     <Ionicons name="location-outline" size={20} color="#9ca3af" />
                     <TextInput

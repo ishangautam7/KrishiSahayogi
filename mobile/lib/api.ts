@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Backend API URL - Using correct IP from Metro Bundler
-const API_BASE_URL = 'http://192.168.101.18:7000/api/v1';
+const API_BASE_URL = 'http://192.168.1.64:7000/api/v1';
 
 // Create axios instance
 const apiClient = axios.create({
@@ -106,10 +106,14 @@ export const api = {
 
     getFertilizerTips: (data: any) =>
         apiClient.post('/ai/fertilizer-tips', data),
+
+    // Notices
+    getNotices: () =>
+        apiClient.get('/notices'),
 };
 
 // ML Server API (separate from main backend)
-const ML_BASE_URL = 'http://192.168.101.18:5000';
+const ML_BASE_URL = 'http://192.168.1.64:5000';
 
 export const mlApi = {
     predictCrop: (data: any) =>
