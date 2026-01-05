@@ -70,9 +70,6 @@ def predict_fertilizer_endpoint():
                 'success': False,
                 'error': error_message
             }), 400
-        
-
-        # Use converted_data which has string inputs converted to integers
 
         # Use converted_data which has string inputs converted to integers
         result = predict_fertilizer(
