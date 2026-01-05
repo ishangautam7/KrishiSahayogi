@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users, Sun, Moon } from "lucide-react";
+import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users, FileText } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { useTheme } from "next-themes";
 import { RootState, AppDispatch } from "@/store/store";
 import { logoutUser } from "@/store/slices/authSlice";
 import { useLanguage } from "@/context/LanguageContext";
@@ -16,7 +15,6 @@ export default function Navbar() {
   const dispatch = useDispatch<AppDispatch>();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { language, setLanguage, t } = useLanguage();
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -31,11 +29,17 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  /* 
+    Updated Navbar:
+    - Removed theme toggle (dark mode forced elsewhere).
+    - Added Notices link.
+  */
   const navLinks = [
     { name: t("marketplace"), href: "/marketplace", icon: ShoppingCart },
     { name: t("ai_features"), href: "/crop-recommendation", icon: Brain },
     { name: t("plantation_guide"), href: "/plantation-guide", icon: BookOpen },
     { name: t("community_network"), href: "/farmer-network", icon: Users },
+    { name: "Notice", href: "/notices", icon: FileText }, // Added Notice link
   ];
 
   return (
@@ -77,15 +81,6 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
-
-            {/* Theme Toggle */}
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-emerald-500 transition-all shadow-sm"
-              aria-label="Toggle theme"
-            >
-              {mounted && (theme === "dark" ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-emerald-600" />)}
-            </button>
 
             {/* Language Switcher */}
             <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -164,16 +159,7 @@ export default function Navbar() {
                 </Link>
               ))}
               <hr className="border-gray-200 dark:border-gray-700" />
-              <div className="flex items-center justify-between px-4 py-2">
-                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Theme</span>
-                <button
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="p-3 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-emerald-500 transition-all"
-                >
-                  {mounted && (theme === "dark" ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-emerald-600" />)}
-                </button>
-              </div>
-              <hr className="border-gray-200 dark:border-gray-700" />
+
               <Link
                 href="/login"
                 onClick={() => setIsOpen(false)}

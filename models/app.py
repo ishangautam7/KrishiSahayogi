@@ -71,10 +71,9 @@ def predict_fertilizer_endpoint():
                 'error': error_message
             }), 400
         
-<<<<<<< HEAD
+
         # Use converted_data which has string inputs converted to integers
-=======
->>>>>>> 6da0e9e40dbd0c664d20ed5f63ff1d26f027a820
+
         result = predict_fertilizer(
             temp=converted_data['temp'],
             humidity=converted_data['humidity'],
