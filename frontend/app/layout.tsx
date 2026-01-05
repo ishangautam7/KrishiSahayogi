@@ -37,8 +37,9 @@ export default function RootLayout({
           <LanguageProvider>
             <ThemeProvider
               attribute="class"
-              defaultTheme="system"
-              enableSystem
+              defaultTheme="dark"
+              enableSystem={false}
+              forcedTheme="dark"
               disableTransitionOnChange
             >
               <AuthLoader>
