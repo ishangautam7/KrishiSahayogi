@@ -3,8 +3,8 @@ import apiClient from '@/lib/axios';
 
 interface Message {
     _id: string;
-    sender: string;
-    receiver: string;
+    sender: string | { _id: string; name: string; avatar?: string };
+    receiver: string | { _id: string; name: string; avatar?: string };
     text: string;
     createdAt: string;
 }
@@ -87,13 +87,20 @@ const messageSlice = createSlice({
 
             if (!otherUser) return;
 
+            // Normalize message sender/receiver for store
+            const normalizedMessage = {
+                ...message,
+                sender,
+                receiver
+            };
+
             if (!state.conversations[otherUser]) {
                 state.conversations[otherUser] = [];
             }
             // Avoid duplicates just in case
-            const exists = state.conversations[otherUser].some(m => m._id === message?._id);
+            const exists = state.conversations[otherUser].some(m => m._id === normalizedMessage._id);
             if (!exists) {
-                state.conversations[otherUser].push(message);
+                state.conversations[otherUser].push(normalizedMessage as Message);
             }
         },
     },
@@ -104,18 +111,36 @@ const messageSlice = createSlice({
             })
             .addCase(fetchConversation.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.conversations[action.payload.userId] = action.payload.messages;
+                // Normalize all messages to use string IDs for sender and receiver
+                state.conversations[action.payload.userId] = action.payload.messages.map((m: any) => ({
+                    ...m,
+                    sender: typeof m.sender === 'object' ? m.sender._id : m.sender,
+                    receiver: typeof m.receiver === 'object' ? m.receiver._id : m.receiver
+                }));
             })
             .addCase(fetchConversation.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
             .addCase(sendMessage.fulfilled, (state, action) => {
-                const { receiver } = action.payload;
+                const sender = typeof action.payload.sender === 'object' ? action.payload.sender._id : action.payload.sender;
+                const receiver = typeof action.payload.receiver === 'object' ? action.payload.receiver._id : action.payload.receiver;
+
                 if (!state.conversations[receiver]) {
                     state.conversations[receiver] = [];
                 }
-                state.conversations[receiver].push(action.payload);
+
+                const normalizedMessage = {
+                    ...action.payload,
+                    sender,
+                    receiver
+                };
+
+                // Avoid duplicates in case socket already added it
+                const exists = state.conversations[receiver].some(m => m._id === normalizedMessage._id);
+                if (!exists) {
+                    state.conversations[receiver].push(normalizedMessage as Message);
+                }
             });
     },
 });

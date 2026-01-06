@@ -79,21 +79,35 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ recipientId, recipientName, rec
                     <div className="flex justify-center items-center h-full text-gray-400">Loading conversation...</div>
                 ) : (
                     messages.map((msg, index) => {
-                        const isMe = msg.sender === currentUserId;
+                        const senderId = typeof msg.sender === 'object' ? (msg.sender as any)._id : msg.sender;
+                        const isMe = senderId === currentUserId;
+                        const messageDate = new Date(msg.createdAt || Date.now());
+                        const showDateSeparator = index === 0 ||
+                            new Date(messages[index - 1].createdAt).toDateString() !== messageDate.toDateString();
+
                         return (
-                            <div key={msg._id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                <div
-                                    className={`max-w-[75%] px-4 py-2 rounded-2xl shadow-sm text-sm ${isMe
-                                        ? 'bg-green-600 text-white rounded-br-none'
-                                        : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'
-                                        }`}
-                                >
-                                    <p>{msg.text}</p>
-                                    <span className={`text-[10px] mt-1 block opacity-70 ${isMe ? 'text-green-100' : 'text-gray-400'}`}>
-                                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
+                            <React.Fragment key={msg._id || index}>
+                                {showDateSeparator && (
+                                    <div className="flex justify-center my-4">
+                                        <span className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                            {messageDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                                        </span>
+                                    </div>
+                                )}
+                                <div className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                                    <div
+                                        className={`max-w-[75%] px-4 py-2 rounded-2xl shadow-sm ${isMe
+                                            ? 'bg-green-600 text-white rounded-br-none'
+                                            : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'
+                                            }`}
+                                    >
+                                        <p className="text-sm leading-relaxed">{msg.text}</p>
+                                        <span className={`text-[10px] mt-1 block font-medium opacity-80 ${isMe ? 'text-green-100 text-right' : 'text-gray-400'}`}>
+                                            {messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
+                            </React.Fragment>
                         );
                     })
                 )}

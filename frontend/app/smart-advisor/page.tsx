@@ -341,6 +341,14 @@ export default function SmartAdvisorPage() {
             <div className="max-w-7xl mx-auto">
                 {/* Hero Header */}
                 <div className="text-center mb-12">
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-sm font-bold mb-6"
+                    >
+
+                    </motion.div>
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
                         Smart <span className="bg-gradient-to-r from-emerald-500 to-green-600 bg-clip-text text-transparent">Farming</span> Advisor
                     </h1>
