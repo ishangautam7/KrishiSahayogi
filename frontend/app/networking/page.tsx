@@ -9,10 +9,13 @@ import apiClient from '@/lib/axios';
 import FarmerFilters from '@/components/networking/FarmerFilters';
 import FarmerList from '@/components/networking/FarmerList';
 import ChatWindow from '@/components/networking/ChatWindow';
+import { useLanguage } from '@/context/LanguageContext';
+import { Search } from 'lucide-react';
 
 export default function NetworkingPage() {
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
+    const { t } = useLanguage();
 
     // State
     const [farmers, setFarmers] = useState([]);
@@ -20,7 +23,7 @@ export default function NetworkingPage() {
     const [selectedFarmerId, setSelectedFarmerId] = useState<string | null>(null);
     const [filters, setFilters] = useState({
         location: '',
-        farmerType: 'all',
+        farmerType: 'All', // Match FarmerFilters capitalization
         primaryCrops: ''
     });
 
@@ -49,7 +52,7 @@ export default function NetworkingPage() {
             try {
                 const params = new URLSearchParams();
                 if (filters.location) params.append('location', filters.location);
-                if (filters.farmerType && filters.farmerType !== 'all') params.append('farmerType', filters.farmerType);
+                if (filters.farmerType && filters.farmerType !== 'All') params.append('farmerType', filters.farmerType);
                 if (filters.primaryCrops) params.append('primaryCrops', filters.primaryCrops);
 
                 const response = await apiClient.get(`/user?${params.toString()}`);
@@ -80,7 +83,9 @@ export default function NetworkingPage() {
             <div className="flex gap-6 h-full">
                 {/* Left Side: Filters and List */}
                 <div className={`flex-1 flex flex-col transition-all ${selectedFarmerId ? 'hidden lg:flex w-full lg:w-1/2' : 'w-full'}`}>
-                    <h1 className="text-3xl font-bold text-gray-800 mb-6 font-heading">Networking</h1>
+                    <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+                        <Search className="text-green-600" /> {t("community_network")}
+                    </h1>
                     <FarmerFilters onFilterChange={handleFilterChange} />
                     <div className="flex-1 overflow-y-auto pr-2">
                         <FarmerList
@@ -92,16 +97,21 @@ export default function NetworkingPage() {
                 </div>
 
                 {/* Right Side: Chat Window */}
-                {selectedFarmerId && user ? (
+                {selectedFarmerId && user && farmers.find((f: any) => f._id === selectedFarmerId) ? (
                     <div className="fixed inset-0 lg:static z-50 lg:z-auto bg-gray-900/50 lg:bg-transparent lg:w-1/2 lg:flex flex-col">
                         <div className="bg-white lg:bg-transparent w-full h-full lg:h-auto lg:flex-1 p-4 lg:p-0">
-                            <ChatWindow
-                                recipientId={selectedFarmer._id}
-                                recipientName={selectedFarmer.name}
-                                recipientAvatar={selectedFarmer.avatar}
-                                onClose={() => setSelectedFarmerId(null)}
-                                currentUserId={user._id}
-                            />
+                            {(() => {
+                                const f = farmers.find((f: any) => f._id === selectedFarmerId) as any;
+                                return (
+                                    <ChatWindow
+                                        recipientId={f._id}
+                                        recipientName={f.name}
+                                        recipientAvatar={f.avatar}
+                                        onClose={() => setSelectedFarmerId(null)}
+                                        currentUserId={user._id}
+                                    />
+                                );
+                            })()}
                         </div>
                     </div>
                 ) : (

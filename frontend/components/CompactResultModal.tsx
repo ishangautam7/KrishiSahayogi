@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, Loader2 } from "lucide-react";
+import { getFertilizerData } from "@/lib/fertilizers";
 
 interface CompactResultModalProps {
     isOpen: boolean;
@@ -55,9 +56,14 @@ export default function CompactResultModal({
                                     <Sparkles className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{title}</h3>
-                                <div className="inline-block px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-2xl text-xl font-black shadow-lg">
+                                <div className="inline-block px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-2xl text-xl font-black shadow-lg mb-2">
                                     {recommendation}
                                 </div>
+                                {title.toLowerCase().includes("fertilizer") && (
+                                    <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-2 uppercase tracking-widest">
+                                        NPK: {getFertilizerData(recommendation).composition}
+                                    </div>
+                                )}
                             </div>
 
                             {/* AI Tips Section */}

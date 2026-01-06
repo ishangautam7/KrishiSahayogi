@@ -8,6 +8,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import ChatWindow from "@/components/Chat/ChatWindow";
 import { useLanguage } from "@/context/LanguageContext";
+import { connectSocket, disconnectSocket, socket } from "@/lib/socket";
+import { addLocalMessage } from "@/store/slices/messageSlice";
+import { AppDispatch } from "@/store/store";
+import { useDispatch } from "react-redux";
 
 interface Farmer {
     _id: string;
@@ -25,8 +29,32 @@ export default function FarmerNetwork() {
     const [locationQuery, setLocationQuery] = useState("");
     const [selectedType, setSelectedType] = useState("All");
 
-    const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
     const { t } = useLanguage();
+    const dispatch = useDispatch<AppDispatch>();
+
+    // Socket Connection
+    useEffect(() => {
+        if (user?._id) {
+            connectSocket(user._id);
+
+            const handleNewMessage = (message: any) => {
+                const senderId = typeof message.sender === 'object' ? message.sender._id : message.sender;
+                const receiverId = typeof message.receiver === 'object' ? message.receiver._id : message.receiver;
+
+                if (receiverId === user._id || senderId === user._id) {
+                    dispatch(addLocalMessage({ message, currentUserId: user._id }));
+                }
+            };
+
+            socket.on('newMessage', handleNewMessage);
+
+            return () => {
+                socket.off('newMessage', handleNewMessage);
+                disconnectSocket();
+            };
+        }
+    }, [user, dispatch]);
 
     useEffect(() => {
         const fetchFarmers = async () => {
@@ -41,7 +69,7 @@ export default function FarmerNetwork() {
         };
 
         fetchFarmers();
-    });
+    }, []);
 
     const filteredFarmers = farmers.filter(farmer => {
         const matchesSearch = farmer.name.toLowerCase().includes(searchQuery.toLowerCase());

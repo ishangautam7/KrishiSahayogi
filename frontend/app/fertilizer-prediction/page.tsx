@@ -11,6 +11,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import SoilQuestionnaire from "@/components/SoilQuestionnaire";
 import CompactResultModal from "@/components/CompactResultModal";
+import { useLanguage } from "@/context/LanguageContext";
+import { getFertilizerData } from "@/lib/fertilizers";
 
 const BACKEND_URL = "http://localhost:7000/api/v1";
 
@@ -35,6 +37,7 @@ const normalizeNPKForFertilizer = (n: number, p: number, k: number) => {
 };
 
 export default function FertilizerPredictionPage() {
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
@@ -56,6 +59,9 @@ export default function FertilizerPredictionPage() {
     });
     const [showQuestionnaire, setShowQuestionnaire] = useState(false);
     const [locationFetching, setLocationFetching] = useState(false);
+    const [aiTips, setAiTips] = useState<string[]>([]);
+    const [loadingTips, setLoadingTips] = useState(false);
+    const [showResultModal, setShowResultModal] = useState(false);
 
     useEffect(() => {
         // ... (existing useEffect for weather/location)
@@ -159,11 +165,44 @@ export default function FertilizerPredictionPage() {
                 phosphorus: normalizedNPK.phosphorus
             };
             const res = await axios.post(`${BACKEND_URL}/ml/predict-fertilizer`, payload);
+            const fertData = getFertilizerData(res.data.fertilizer);
             setResult(res.data);
+            setShowResultModal(true);
+            fetchAITips(res.data.fertilizer, {
+                N: fertiForm.Nitrogen,
+                P: fertiForm.Phosphorous,
+                K: fertiForm.Potassium,
+                temp: fertiForm.Temperature,
+                humidity: fertiForm.Humidity,
+                moisture: fertiForm.Moisture
+            }, fertData.tips);
         } catch (err: any) {
             setError(err.response?.data?.message || "Failed to get fertilizer prediction. Make sure ML server is running.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchAITips = async (recommendation: string, data: any, staticTips: string[] = []) => {
+        setLoadingTips(true);
+        try {
+            const response = await axios.post(`${BACKEND_URL}/ai/fertilizer-tips`, {
+                fertilizer: recommendation,
+                soilData: { N: data.N, P: data.P, K: data.K },
+                climate: { temperature: data.temp, humidity: data.humidity, moisture: data.moisture }
+            });
+            if (response.data.success) {
+                setAiTips(response.data.tips?.length > 0 ? response.data.tips : staticTips);
+            } else if (staticTips.length > 0) {
+                setAiTips(staticTips);
+            }
+        } catch (err) {
+            console.error('Failed to fetch AI tips:', err);
+            if (staticTips.length > 0) {
+                setAiTips(staticTips);
+            }
+        } finally {
+            setLoadingTips(false);
         }
     };
 
@@ -175,7 +214,7 @@ export default function FertilizerPredictionPage() {
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">
-                        Fertilizer <span className="text-emerald-500">Aid</span>
+                        {t("fertilizer_prediction").split(' ')[0]} <span className="text-emerald-500">{t("fertilizer_prediction").split(' ')[1] || "Aid"}</span>
                     </h1>
                 </div>
 
@@ -186,14 +225,14 @@ export default function FertilizerPredictionPage() {
                             className="glass p-8 rounded-[3rem] shadow-2xl border border-white/20 dark:border-gray-800/50 relative overflow-hidden"
                         >
                             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-8 flex items-center gap-3">
-                                <FlaskConical className="text-emerald-500" /> Efficiency Parameters
+                                <FlaskConical className="text-emerald-500" /> {t("farm_parameters")}
                             </h2>
 
                             <form onSubmit={handleFertiSubmit} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="col-span-2 grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Soil Type</label>
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">{t("soil_type")}</label>
                                             <select
                                                 value={fertiForm.Soil_Type}
                                                 onChange={(e) => setFertiForm({ ...fertiForm, Soil_Type: e.target.value })}
@@ -203,7 +242,7 @@ export default function FertilizerPredictionPage() {
                                             </select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Crop Type</label>
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">{t("best_crop")}</label>
                                             <select
                                                 value={fertiForm.Crop_Type}
                                                 onChange={(e) => setFertiForm({ ...fertiForm, Crop_Type: e.target.value })}
@@ -213,16 +252,16 @@ export default function FertilizerPredictionPage() {
                                             </select>
                                         </div>
                                     </div>
-                                    <InputGroup label="Nitrogen" value={fertiForm.Nitrogen} onChange={(v) => setFertiForm({ ...fertiForm, Nitrogen: v })} />
-                                    <InputGroup label="Potassium" value={fertiForm.Potassium} onChange={(v) => setFertiForm({ ...fertiForm, Potassium: v })} />
-                                    <InputGroup label="Phosphorus" value={fertiForm.Phosphorous} onChange={(v) => setFertiForm({ ...fertiForm, Phosphorous: v })} />
-                                    <InputGroup label="Temp (°C)" value={fertiForm.Temperature} onChange={(v) => setFertiForm({ ...fertiForm, Temperature: v })} />
-                                    <InputGroup label="Humidity" value={fertiForm.Humidity} onChange={(v) => setFertiForm({ ...fertiForm, Humidity: v })} />
-                                    <InputGroup label="Moisture" value={fertiForm.Moisture} onChange={(v) => setFertiForm({ ...fertiForm, Moisture: v })} />
+                                    <InputGroup label={t("nitrogen")} value={fertiForm.Nitrogen} onChange={(v) => setFertiForm({ ...fertiForm, Nitrogen: v })} />
+                                    <InputGroup label={t("potassium")} value={fertiForm.Potassium} onChange={(v) => setFertiForm({ ...fertiForm, Potassium: v })} />
+                                    <InputGroup label={t("phosphorus")} value={fertiForm.Phosphorous} onChange={(v) => setFertiForm({ ...fertiForm, Phosphorous: v })} />
+                                    <InputGroup label={t("temperature_label")} value={fertiForm.Temperature} onChange={(v) => setFertiForm({ ...fertiForm, Temperature: v })} />
+                                    <InputGroup label={t("humidity_label")} value={fertiForm.Humidity} onChange={(v) => setFertiForm({ ...fertiForm, Humidity: v })} />
+                                    <InputGroup label={t("moisture_label")} value={fertiForm.Moisture} onChange={(v) => setFertiForm({ ...fertiForm, Moisture: v })} />
                                 </div>
 
                                 <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4 mb-4">
-                                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Auto-Fill Options</p>
+                                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">{t("quick_fill")}</p>
                                     <div className="grid grid-cols-2 gap-3">
                                         <button
                                             type="button"
@@ -237,7 +276,7 @@ export default function FertilizerPredictionPage() {
                                                 </div>
                                             ) : (
                                                 <div className="flex flex-col items-center gap-1">
-                                                    <div className="text-[15px] opacity-80">Temp • Humidity • Moisture</div>
+                                                    <div className="text-[15px] opacity-80">{t("weather_data")}</div>
                                                 </div>
                                             )}
                                         </button>
@@ -247,7 +286,7 @@ export default function FertilizerPredictionPage() {
                                             className="py-3 px-2 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-600 active:scale-95 transition-all text-xs"
                                         >
                                             <div className="flex flex-col items-center gap-1">
-                                                <div className="text-[15px] opacity-80">N • P • K</div>
+                                                <div className="text-[15px] opacity-80">{t("soil_quiz")}</div>
                                             </div>
                                         </button>
                                     </div>
@@ -265,7 +304,7 @@ export default function FertilizerPredictionPage() {
                                         <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
                                     ) : (
                                         <>
-                                            Run AI Diagnostic
+                                            {t("run_diagnosis")}
                                             <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                         </>
                                     )}
@@ -285,20 +324,28 @@ export default function FertilizerPredictionPage() {
                                     className="glass p-12 rounded-[3.5rem] shadow-2xl border border-white/20 h-full flex flex-col items-center justify-center text-center relative overflow-hidden"
                                 >
                                     <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 via-green-400 to-emerald-500"></div>
-                                    <div className="w-32 h-32 bg-emerald-50 dark:bg-emerald-900/30 rounded-[2.5rem] flex items-center justify-center mb-10 shadow-inner group">
-                                        <CheckCircle2 className="w-16 h-16 text-emerald-500 group-hover:scale-110 transition-transform" />
+                                    <div className="relative mb-10 group">
+                                        <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full scale-150 animate-pulse"></div>
+                                        <img
+                                            src={getFertilizerData(result.fertilizer).image}
+                                            alt={result.fertilizer}
+                                            className="w-48 h-48 rounded-[3rem] object-cover shadow-2xl relative z-10 border-4 border-white/50 group-hover:scale-105 transition-transform duration-500"
+                                        />
                                     </div>
 
                                     <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600 dark:text-emerald-400 mb-4 bg-emerald-100 dark:bg-emerald-900/40 px-6 py-2 rounded-full leading-none">
-                                        Fertilizer Insight
+                                        {t("best_fertilizer")}
                                     </h3>
 
                                     <div className="mb-10">
-                                        <h2 className="text-6xl md:text-8xl font-black text-gray-900 dark:text-white capitalize tracking-tighter mb-4">
+                                        <h2 className="text-6xl md:text-8xl font-black text-gray-900 dark:text-white capitalize tracking-tighter mb-2">
                                             {result.fertilizer}
                                         </h2>
+                                        <div className="inline-block px-6 py-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-sm font-black mb-6 border border-emerald-100 dark:border-emerald-800/50">
+                                            NPK: {getFertilizerData(result.fertilizer).composition}
+                                        </div>
                                         <p className="text-gray-500 dark:text-gray-400 text-lg font-medium max-w-md mx-auto">
-                                            Our AI analysis predicts this will yield the best results for your current environmental parameters.
+                                            {getFertilizerData(result.fertilizer).description}
                                         </p>
                                     </div>
 
@@ -317,7 +364,6 @@ export default function FertilizerPredictionPage() {
                                                 <Wind className="text-blue-500 w-5 h-5" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] uppercase font-black text-gray-400 tracking-wider">Soil Harmony</p>
                                                 <p className="text-lg font-black text-gray-800 dark:text-gray-200">Optimal</p>
                                             </div>
                                         </div>
@@ -327,7 +373,7 @@ export default function FertilizerPredictionPage() {
                                         onClick={() => setResult(null)}
                                         className="mt-12 text-gray-400 hover:text-emerald-500 text-sm font-bold transition-all uppercase tracking-widest"
                                     >
-                                        Try New Parameters
+                                        ← {t("new_analysis")}
                                     </button>
                                 </motion.div>
                             ) : (
@@ -344,9 +390,9 @@ export default function FertilizerPredictionPage() {
                                             <Beaker className="w-16 h-16 text-emerald-500 animate-float" />
                                         </div>
                                     </div>
-                                    <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-6">Ready for Diagnosis?</h3>
+                                    <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-6">{t("analysis_empty_title")}</h3>
                                     <p className="text-gray-500 dark:text-gray-400 max-w-sm text-lg font-medium leading-relaxed">
-                                        Fill in the soil and crop modules and our AI will recommend the ideal fertilizer for your season.
+                                        {t("analysis_empty_desc")}
                                     </p>
 
                                     {error && (
