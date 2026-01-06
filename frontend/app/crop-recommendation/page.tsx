@@ -11,10 +11,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import SoilQuestionnaire from "@/components/SoilQuestionnaire";
 import CompactResultModal from "@/components/CompactResultModal";
+import { useLanguage } from "@/context/LanguageContext";
 
 const ML_API_URL = "http://localhost:5000";
 
 export default function CropRecommendationPage() {
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
@@ -201,7 +203,7 @@ export default function CropRecommendationPage() {
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">
-                        Crop <span className="text-emerald-500">Suggestion</span>
+                        {t("crop_recommendation").split(' ')[0]} <span className="text-emerald-500">{t("crop_recommendation").split(' ')[1] || "Suggestion"}</span>
                     </h1>
 
                 </div>
@@ -213,24 +215,24 @@ export default function CropRecommendationPage() {
                             className="glass p-8 rounded-[3rem] shadow-2xl border border-white/20 dark:border-gray-800/50 relative overflow-hidden"
                         >
                             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-8 flex items-center gap-3">
-                                <Sprout className="text-emerald-500" /> Soil & Env Parameters
+                                <Sprout className="text-emerald-500" /> {t("farm_parameters")}
                             </h2>
 
                             <form onSubmit={handleCropSubmit} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
-                                    <InputGroup label="Nitrogen (N)" value={cropForm.N} onChange={(v) => setCropForm({ ...cropForm, N: v })} icon={<Beaker className="w-4 h-4" />} />
-                                    <InputGroup label="Phosphorus (P)" value={cropForm.P} onChange={(v) => setCropForm({ ...cropForm, P: v })} icon={<FlaskConical className="w-4 h-4" />} />
-                                    <InputGroup label="Potassium (K)" value={cropForm.K} onChange={(v) => setCropForm({ ...cropForm, K: v })} icon={<FlaskConical className="w-4 h-4" />} />
-                                    <InputGroup label="pH Level" value={cropForm.ph} onChange={(v) => setCropForm({ ...cropForm, ph: v })} icon={<AlertCircle className="w-4 h-4" />} />
-                                    <InputGroup label="Temperature" value={cropForm.temperature} onChange={(v) => setCropForm({ ...cropForm, temperature: v })} icon={<Thermometer className="w-4 h-4" />} />
-                                    <InputGroup label="Humidity" value={cropForm.humidity} onChange={(v) => setCropForm({ ...cropForm, humidity: v })} icon={<Droplets className="w-4 h-4" />} />
+                                    <InputGroup label={t("nitrogen")} value={cropForm.N} onChange={(v) => setCropForm({ ...cropForm, N: v })} icon={<Beaker className="w-4 h-4" />} />
+                                    <InputGroup label={t("phosphorus")} value={cropForm.P} onChange={(v) => setCropForm({ ...cropForm, P: v })} icon={<FlaskConical className="w-4 h-4" />} />
+                                    <InputGroup label={t("potassium")} value={cropForm.K} onChange={(v) => setCropForm({ ...cropForm, K: v })} icon={<FlaskConical className="w-4 h-4" />} />
+                                    <InputGroup label={t("ph_level")} value={cropForm.ph} onChange={(v) => setCropForm({ ...cropForm, ph: v })} icon={<AlertCircle className="w-4 h-4" />} />
+                                    <InputGroup label={t("temperature_label")} value={cropForm.temperature} onChange={(v) => setCropForm({ ...cropForm, temperature: v })} icon={<Thermometer className="w-4 h-4" />} />
+                                    <InputGroup label={t("humidity_label")} value={cropForm.humidity} onChange={(v) => setCropForm({ ...cropForm, humidity: v })} icon={<Droplets className="w-4 h-4" />} />
                                     <div className="col-span-2">
-                                        <InputGroup label="Rainfall (mm)" value={cropForm.rainfall} onChange={(v) => setCropForm({ ...cropForm, rainfall: v })} icon={<Waves className="w-4 h-4" />} />
+                                        <InputGroup label={t("rainfall_label")} value={cropForm.rainfall} onChange={(v) => setCropForm({ ...cropForm, rainfall: v })} icon={<Waves className="w-4 h-4" />} />
                                     </div>
                                 </div>
 
                                 <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4 mb-4">
-                                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Auto-Fill Options</p>
+                                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">{t("quick_fill")}</p>
                                     <div className="grid grid-cols-2 gap-3">
                                         <button
                                             type="button"
@@ -245,7 +247,7 @@ export default function CropRecommendationPage() {
                                                 </div>
                                             ) : (
                                                 <div className="flex flex-col items-center gap-1">
-                                                    <div className="text-[15px] opacity-80">Temp • Humidity • Rainfall</div>
+                                                    <div className="text-[15px] opacity-80">{t("weather_data")}</div>
                                                 </div>
                                             )}
                                         </button>
@@ -255,7 +257,7 @@ export default function CropRecommendationPage() {
                                             className="py-3 px-2 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-600 active:scale-95 transition-all text-xs"
                                         >
                                             <div className="flex flex-col items-center gap-1">
-                                                <div className="text-[15px] opacity-80">N • P • K • pH</div>
+                                                <div className="text-[15px] opacity-80">{t("soil_quiz")}</div>
                                             </div>
                                         </button>
                                     </div>
@@ -273,7 +275,7 @@ export default function CropRecommendationPage() {
                                         <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
                                     ) : (
                                         <>
-                                            Run AI Diagnostic
+                                            {t("run_diagnosis")}
                                             <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                         </>
                                     )}
@@ -320,12 +322,17 @@ export default function CropRecommendationPage() {
                                     className="glass p-12 rounded-[3.5rem] shadow-2xl border border-white/20 h-full flex flex-col items-center justify-center text-center relative overflow-hidden"
                                 >
                                     <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 via-green-400 to-emerald-500"></div>
-                                    <div className="w-32 h-32 bg-emerald-50 dark:bg-emerald-900/30 rounded-[2.5rem] flex items-center justify-center mb-10 shadow-inner group">
-                                        <CheckCircle2 className="w-16 h-16 text-emerald-500 group-hover:scale-110 transition-transform" />
+                                    <div className="relative mb-10 group">
+                                        <div className="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full scale-150 animate-pulse"></div>
+                                        <img
+                                            src={`https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=400&auto=format&fit=crop`}
+                                            alt={result.crop}
+                                            className="w-48 h-48 rounded-[3rem] object-cover shadow-2xl relative z-10 border-4 border-white/50 group-hover:scale-105 transition-transform duration-500"
+                                        />
                                     </div>
 
                                     <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600 dark:text-emerald-400 mb-4 bg-emerald-100 dark:bg-emerald-900/40 px-6 py-2 rounded-full leading-none">
-                                        Top Recommendation
+                                        {t("best_crop")}
                                     </h3>
 
                                     <div className="mb-10">
@@ -352,7 +359,6 @@ export default function CropRecommendationPage() {
                                                 <Wind className="text-blue-500 w-5 h-5" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] uppercase font-black text-gray-400 tracking-wider">Climate Fit</p>
                                                 <p className="text-lg font-black text-gray-800 dark:text-gray-200">Optimal</p>
                                             </div>
                                         </div>
@@ -362,7 +368,7 @@ export default function CropRecommendationPage() {
                                         onClick={() => setResult(null)}
                                         className="mt-12 text-gray-400 hover:text-emerald-500 text-sm font-bold transition-all uppercase tracking-widest"
                                     >
-                                        Try New Parameters
+                                        ← {t("new_analysis")}
                                     </button>
                                 </motion.div>
                             ) : (
@@ -379,9 +385,9 @@ export default function CropRecommendationPage() {
                                             <Sprout className="w-16 h-16 text-emerald-500 animate-float" />
                                         </div>
                                     </div>
-                                    <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-6">Ready for Diagnosis?</h3>
+                                    <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-6">{t("analysis_empty_title")}</h3>
                                     <p className="text-gray-500 dark:text-gray-400 max-w-sm text-lg font-medium leading-relaxed">
-                                        Fill in the data modules on the left and our AI will process the complex agricultural relationships to provide expert advice.
+                                        {t("analysis_empty_desc")}
                                     </p>
 
                                     {error && (

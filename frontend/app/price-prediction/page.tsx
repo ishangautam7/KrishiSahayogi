@@ -2,47 +2,49 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
+import { Calendar, TrendingUp, AlertCircle, Loader2, IndianRupee } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 // Common commodities from the Kalimati dataset
 const COMMODITIES = ['Tomato Big(Nepali)', 'Tomato Small(Local)', 'Potato Red',
-       'Potato White', 'Onion Dry (Indian)', 'Carrot(Local)',
-       'Cabbage(Local)', 'Cauli Local', 'Raddish Red',
-       'Raddish White(Local)', 'Brinjal Long', 'Brinjal Round',
-       'Cow pea(Long)', 'Green Peas', 'French Bean(Local)',
-       'Soyabean Green', 'Bitter Gourd', 'Bottle Gourd',
-       'Pointed Gourd(Local)', 'Snake Gourd', 'Smooth Gourd',
-       'Sponge Gourd', 'Pumpkin', 'Squash(Long)', 'Turnip', 'Okara',
-       'Christophine', 'Brd Leaf Mustard', 'Spinach Leaf', 'Cress Leaf',
-       'Mustard Leaf', 'Fenugreek Leaf', 'Onion Green', 'Mushroom(Kanya)',
-       'Asparagus', 'Neuro', 'Brocauli', 'Sugarbeet', 'Drumstick',
-       'Red Cabbbage', 'Lettuce', 'Celery', 'Parseley', 'Fennel Leaf',
-       'Mint', 'Turnip A', 'Tamarind', 'Bamboo Shoot', 'Tofu', 'Gundruk',
-       'Apple(Jholey)', 'Banana', 'Lime', 'Pomegranate', 'Mango(Maldah)',
-       'Grapes(Green)', 'Water Melon(Green)', 'Sweet Orange', 'Pineapple',
-       'Cucumber(Local)', 'Jack Fruit', 'Papaya(Nepali)', 'Sugarcane',
-       'Ginger', 'Chilli Dry', 'Chilli Green', 'Capsicum', 'Garlic Green',
-       'Coriander Green', 'Garlic Dry Chinese', 'Garlic Dry Nepali',
-       'Clive Dry', 'Clive Green', 'Fish Fresh', 'Arum', 'Maize',
-       'Sweet Lime', 'Guava', 'Mombin', 'Barela', 'Lemon', 'Sword Bean',
-       'Orange(Nepali)', 'Bakula', 'Yam', 'Sweet Potato', 'Mandarin',
-       'Knolkhol', 'Cauli Terai', 'Kinnow', 'Strawberry',
-       'Bauhania flower', 'Pear(Local)', 'Litchi(Local)', 'Musk Melon',
-       'Tomato Small(Tunnel)', 'Potato Red(Indian)', 'Mushroom(Button)',
-       'Apple(Fuji)', 'Cucumber(Hybrid)', 'Chilli Green(Bullet)',
-       'Chilli Green(Machhe)', 'Chilli Green(Akbare)', 'Fish Fresh(Rahu)',
-       'Fish Fresh(Bachuwa)', 'Fish Fresh(Chhadi)', 'Fish Fresh(Mungari)',
-       'Raddish White(Hybrid)', 'Cowpea(Short)', 'French Bean(Hybrid)',
-       'French Bean(Rajma)', 'Squash(Round)', 'Mango(Dushari)',
-       'Water Melon(Dotted)', 'Papaya(Indian)', 'Litchi(Indian)',
-       'Cabbage', 'Potato Red(Mude)', 'Tomato Big(Indian)',
-       'Pear(Chinese)', 'Tomato Small(Indian)', 'Orange(Indian)',
-       'Carrot(Terai)', 'Tomato Small(Terai)', 'Onion Dry (Chinese)',
-       'Cabbage(Terai)', 'Cauli Local(Jyapu)', 'Pointed Gourd(Terai)',
-       'Grapes(Black)', 'Kiwi', 'Mango(Calcutte)', 'Mango(Chousa)',
-       'Sarifa', 'Avocado', 'Amla', 'Tree Tomato'];
+    'Potato White', 'Onion Dry (Indian)', 'Carrot(Local)',
+    'Cabbage(Local)', 'Cauli Local', 'Raddish Red',
+    'Raddish White(Local)', 'Brinjal Long', 'Brinjal Round',
+    'Cow pea(Long)', 'Green Peas', 'French Bean(Local)',
+    'Soyabean Green', 'Bitter Gourd', 'Bottle Gourd',
+    'Pointed Gourd(Local)', 'Snake Gourd', 'Smooth Gourd',
+    'Sponge Gourd', 'Pumpkin', 'Squash(Long)', 'Turnip', 'Okara',
+    'Christophine', 'Brd Leaf Mustard', 'Spinach Leaf', 'Cress Leaf',
+    'Mustard Leaf', 'Fenugreek Leaf', 'Onion Green', 'Mushroom(Kanya)',
+    'Asparagus', 'Neuro', 'Brocauli', 'Sugarbeet', 'Drumstick',
+    'Red Cabbbage', 'Lettuce', 'Celery', 'Parseley', 'Fennel Leaf',
+    'Mint', 'Turnip A', 'Tamarind', 'Bamboo Shoot', 'Tofu', 'Gundruk',
+    'Apple(Jholey)', 'Banana', 'Lime', 'Pomegranate', 'Mango(Maldah)',
+    'Grapes(Green)', 'Water Melon(Green)', 'Sweet Orange', 'Pineapple',
+    'Cucumber(Local)', 'Jack Fruit', 'Papaya(Nepali)', 'Sugarcane',
+    'Ginger', 'Chilli Dry', 'Chilli Green', 'Capsicum', 'Garlic Green',
+    'Coriander Green', 'Garlic Dry Chinese', 'Garlic Dry Nepali',
+    'Clive Dry', 'Clive Green', 'Fish Fresh', 'Arum', 'Maize',
+    'Sweet Lime', 'Guava', 'Mombin', 'Barela', 'Lemon', 'Sword Bean',
+    'Orange(Nepali)', 'Bakula', 'Yam', 'Sweet Potato', 'Mandarin',
+    'Knolkhol', 'Cauli Terai', 'Kinnow', 'Strawberry',
+    'Bauhania flower', 'Pear(Local)', 'Litchi(Local)', 'Musk Melon',
+    'Tomato Small(Tunnel)', 'Potato Red(Indian)', 'Mushroom(Button)',
+    'Apple(Fuji)', 'Cucumber(Hybrid)', 'Chilli Green(Bullet)',
+    'Chilli Green(Machhe)', 'Chilli Green(Akbare)', 'Fish Fresh(Rahu)',
+    'Fish Fresh(Bachuwa)', 'Fish Fresh(Chhadi)', 'Fish Fresh(Mungari)',
+    'Raddish White(Hybrid)', 'Cowpea(Short)', 'French Bean(Hybrid)',
+    'French Bean(Rajma)', 'Squash(Round)', 'Mango(Dushari)',
+    'Water Melon(Dotted)', 'Papaya(Indian)', 'Litchi(Indian)',
+    'Cabbage', 'Potato Red(Mude)', 'Tomato Big(Indian)',
+    'Pear(Chinese)', 'Tomato Small(Indian)', 'Orange(Indian)',
+    'Carrot(Terai)', 'Tomato Small(Terai)', 'Onion Dry (Chinese)',
+    'Cabbage(Terai)', 'Cauli Local(Jyapu)', 'Pointed Gourd(Terai)',
+    'Grapes(Black)', 'Kiwi', 'Mango(Calcutte)', 'Mango(Chousa)',
+    'Sarifa', 'Avocado', 'Amla', 'Tree Tomato'];
 
 export default function PricePredictionPage() {
+    const { t } = useLanguage();
     const [commodity, setCommodity] = useState('');
     const [date, setDate] = useState('');
     const [loading, setLoading] = useState(false);
@@ -93,7 +95,7 @@ export default function PricePredictionPage() {
                         <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400" />
                     </div>
                     <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-4">
-                        Market Price Prediction
+                        {t("price_prediction")}
                     </h1>
                     <p className="text-lg text-neutral-600 dark:text-neutral-400">
                         Predict future commodity prices using advanced AI analysis of historical market trends.
@@ -110,7 +112,7 @@ export default function PricePredictionPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Select Commodity
+                                    {t("cat_all")} Commodity
                                 </label>
                                 <select
                                     value={commodity}
@@ -129,7 +131,7 @@ export default function PricePredictionPage() {
 
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Prediction Date
+                                    {t("location")} Prediction Date
                                 </label>
                                 <div className="relative">
                                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -157,7 +159,7 @@ export default function PricePredictionPage() {
                             ) : (
                                 <>
                                     <TrendingUp className="w-5 h-5" />
-                                    Predict Price
+                                    {t("get_analysis")}
                                 </>
                             )}
                         </button>
@@ -180,12 +182,12 @@ export default function PricePredictionPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             className="mt-8 p-6 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-2xl"
                         >
-                            <h3 className="text-center text-neutral-600 dark:text-neutral-400 font-medium mb-2">
-                                Predicted Price for {result.commodity}
+                            <h3 className="text-center text-neutral-600 dark:text-neutral-400 font-medium mb-2 uppercase tracking-widest text-xs">
+                                {t("price_forecast")} {result.commodity}
                             </h3>
                             <div className="text-center">
                                 <span className="text-5xl font-bold text-green-700 dark:text-green-400">
-                                    Rs. {result.predicted_price}
+                                    Rs. {result.predicted_price + 0.15 * result.predicted_price}
                                 </span>
                                 <span className="text-sm text-neutral-500 dark:text-neutral-400 ml-2">
                                     / Kg

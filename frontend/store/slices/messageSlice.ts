@@ -74,17 +74,13 @@ const messageSlice = createSlice({
                 return;
             }
 
-            const { sender, receiver } = message;
+            const sender = typeof message.sender === 'object' ? (message.sender as any)._id : message.sender;
+            const receiver = typeof message.receiver === 'object' ? (message.receiver as any)._id : message.receiver;
 
-            // If we don't have currentUserId, we can't determine which side the conversation is on
-            // unless we use a different logic. Let's try to handle it.
             let otherUser: string | null = null;
             if (currentUserId) {
                 otherUser = sender === currentUserId ? receiver : sender;
             } else {
-                // Fallback: If we don't know who "I" am, we can't reliably update the conversation list.
-                // However, we can try to find an existing conversation.
-                // For now, let's just log and return if we can't determine the other user.
                 console.warn("addLocalMessage: currentUserId missing, skipping update.");
                 return;
             }

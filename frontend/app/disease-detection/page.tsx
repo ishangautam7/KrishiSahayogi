@@ -4,6 +4,7 @@ import { useState, useRef, ChangeEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Upload, X, Loader2, Sparkles, CheckCircle2, AlertCircle } from "lucide-react";
 import axios from "axios";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface PredictionResult {
     disease: string;
@@ -17,6 +18,7 @@ interface Solution {
 }
 
 export default function DiseaseDetectionPage() {
+    const { t } = useLanguage();
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [prediction, setPrediction] = useState<PredictionResult | null>(null);
@@ -121,7 +123,7 @@ export default function DiseaseDetectionPage() {
                 <div className="text-center mb-16">
 
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">
-                        Disease <span className="text-emerald-500">Detection</span>
+                        {t("disease_detection").split(' ')[0]} <span className="text-emerald-500">{t("disease_detection").split(' ')[1] || "Detection"}</span>
                     </h1>
                     <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium leading-relaxed">
                         Identify plant pathologies instantly using computer vision and receive expert treatment plans.
@@ -144,7 +146,7 @@ export default function DiseaseDetectionPage() {
                             >
                                 <Upload className="w-20 h-20 text-gray-400 mx-auto mb-6" />
                                 <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3">
-                                    Upload Plant Image
+                                    {t("run_diagnosis")}
                                 </h3>
                                 <p className="text-gray-500 dark:text-gray-400 font-medium">
                                     Click to select or drag and drop an image of a plant leaf
@@ -181,12 +183,12 @@ export default function DiseaseDetectionPage() {
                                     {loading ? (
                                         <span className="flex items-center justify-center gap-2">
                                             <Loader2 className="w-5 h-5 animate-spin" />
-                                            Analyzing...
+                                            {t("loading")}
                                         </span>
                                     ) : (
                                         <span className="flex items-center justify-center gap-2">
                                             <Brain className="w-5 h-5" />
-                                            Analyze Disease
+                                            {t("run_diagnosis")}
                                         </span>
                                     )}
                                 </button>
