@@ -5,8 +5,8 @@ import {
     Sprout, Brain, MapPin, Cloudy, Thermometer,
     Droplets, FlaskConical, Beaker, Waves, TrendingUp,
     ChevronRight, CheckCircle2, AlertCircle,
-    Info, Wind, Sun, Sparkles, Calendar, Loader2, Lightbulb
-} from "lucide-react";
+    Info, Wind, Sun, Sparkles, Calendar, Loader2, Lightbulb, Settings2 , Gauge , Zap
+ } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { mapToPriceCommodity } from "@/lib/commodities";
@@ -339,8 +339,7 @@ export default function SmartAdvisorPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-sm font-bold mb-6"
                     >
-                        <Sparkles className="w-4 h-4" />
-                        AI-Powered Complete Farming Analysis
+                        
                     </motion.div>
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
                         Smart <span className="bg-gradient-to-r from-emerald-500 to-green-600 bg-clip-text text-transparent">Farming</span> Advisor
@@ -362,7 +361,7 @@ export default function SmartAdvisorPage() {
 
                             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
                                 <div className="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl">
-                                    <Brain className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                                    <Gauge className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 Farm Parameters
                             </h2>
@@ -632,7 +631,7 @@ export default function SmartAdvisorPage() {
                                     <div className="relative mb-10">
                                         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 via-green-400/30 to-blue-500/30 blur-3xl rounded-full scale-150 animate-pulse"></div>
                                         <div className="w-32 h-32 bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl flex items-center justify-center relative z-10">
-                                            <Brain className="w-16 h-16 text-emerald-500" />
+                                            <Zap className="w-16 h-16 text-emerald-500" />
                                         </div>
                                     </div>
                                     <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-4">Complete Farm Analysis</h3>

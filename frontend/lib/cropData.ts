@@ -41,7 +41,7 @@ export const CROP_GUIDES_EN: CropGuide[] = [
     scientific: "Triticum aestivum",
     category: "Cereal",
     season: "Winter (Rabi)",
-    image: "/assets/images/Yield.png",
+    image: "/assets/images/Crop.png",
     description: "A major winter crop in the Terai and mid-hills, essential for food security.",
     stats: {
       temp: "10°C - 25°C",
@@ -61,7 +61,7 @@ export const CROP_GUIDES_EN: CropGuide[] = [
     scientific: "Zea mays",
     category: "Cereal",
     season: "Summer/Monsoon",
-    image: "/assets/images/Market.png",
+    image: "/assets/images/makai.png",
     description: "Widely grown in the hilly regions for both food and livestock feed.",
     stats: {
       temp: "18°C - 30°C",
@@ -124,7 +124,7 @@ export const CROP_GUIDES_NE: CropGuide[] = [
     scientific: "Triticum aestivum",
     category: "अन्न",
     season: "हिउँद (रबी)",
-    image: "/assets/images/Yield.png",
+    image: "/assets/images/Crop.png",
     description: "तराई र मध्यपहाडी क्षेत्रको प्रमुख हिउँदे बाली, खाद्य सुरक्षाका लागि आवश्यक छ।",
     stats: {
       temp: "10°C - 25°C",
@@ -144,7 +144,7 @@ export const CROP_GUIDES_NE: CropGuide[] = [
     scientific: "Zea mays",
     category: "अन्न",
     season: "गर्मी/मनसुन",
-    image: "/assets/images/Market.png",
+    image: "/assets/images/Crop.png",
     description: "मानिसको खाना र पशु आहाराका लागि पहाडी क्षेत्रमा व्यापक रूपमा लगाइन्छ।",
     stats: {
       temp: "18°C - 30°C",

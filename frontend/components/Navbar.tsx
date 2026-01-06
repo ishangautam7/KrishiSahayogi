@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users, Sun, Moon, ChevronDown, Microscope, BarChart3, FileText, Sparkles } from "lucide-react";
+import { Menu, X, ShoppingCart, Leaf, Brain, BookOpen, LogOut, User, Users, Sun, Moon, ChevronDown, Microscope, BarChart3, FileText, Sparkles, Sprout, FlaskConical , Bot } from "lucide-react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
@@ -45,12 +45,12 @@ export default function Navbar() {
     { name: t("marketplace"), href: "/marketplace", icon: ShoppingCart },
     {
       name: t("ai_features"),
-      icon: Brain,
+      icon: Bot,
       isDropdown: true,
       features: [
         { name: "Smart Advisor", href: "/smart-advisor", icon: Sparkles, color: "text-purple-500", highlight: true },
-        { name: t("fertilizer_prediction"), href: "/fertilizer-prediction", icon: Leaf, color: "text-emerald-500" },
-        { name: t("crop_recommendation"), href: "/crop-recommendation", icon: Brain, color: "text-green-500" },
+        { name: t("fertilizer_prediction"), href: "/fertilizer-prediction", icon: FlaskConical, color: "text-emerald-500" },
+        { name: t("crop_recommendation"), href: "/crop-recommendation", icon: Sprout, color: "text-green-500" },
         { name: t("disease_detection"), href: "/disease-detection", icon: Microscope, color: "text-teal-500" },
         { name: t("plantation_guide"), href: "/plantation-guide", icon: BookOpen, color: "text-amber-500" },
         { name: t("price_prediction"), href: "/price-prediction", icon: BarChart3, color: "text-blue-500" },
