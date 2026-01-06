@@ -21,7 +21,7 @@ export const CROP_GUIDES_EN: CropGuide[] = [
     scientific: "Oryza sativa",
     category: "Cereal",
     season: "Monsoon (Kharif)",
-    image: "/assets/images/Crop.png",
+    image: "/assets/images/rice.webp",
     description: "The primary staple crop of Nepal, requiring standing water and humid conditions.",
     stats: {
       temp: "20°C - 35°C",
@@ -41,7 +41,7 @@ export const CROP_GUIDES_EN: CropGuide[] = [
     scientific: "Triticum aestivum",
     category: "Cereal",
     season: "Winter (Rabi)",
-    image: "/assets/images/Crop.png",
+    image: "/assets/images/wheat.jpg",
     description: "A major winter crop in the Terai and mid-hills, essential for food security.",
     stats: {
       temp: "10°C - 25°C",
@@ -81,7 +81,7 @@ export const CROP_GUIDES_EN: CropGuide[] = [
     scientific: "Solanum tuberosum",
     category: "Vegetable",
     season: "Winter",
-    image: "/assets/images/Crop.png",
+    image: "/assets/images/potato.jpg",
     description: "A major cash crop in Nepal, grown across Terai, Hills, and Mountains.",
     stats: {
       temp: "15°C - 25°C",
@@ -104,7 +104,7 @@ export const CROP_GUIDES_NE: CropGuide[] = [
     scientific: "Oryza sativa",
     category: "अन्न",
     season: "मनसुन (खरिफ)",
-    image: "/assets/images/Crop.png",
+    image: "/assets/images/rice.webp",
     description: "नेपालको प्रमुख मुख्य बाली, जसलाई स्थिर पानी र आर्द्र अवस्था चाहिन्छ।",
     stats: {
       temp: "20°C - 35°C",
@@ -124,7 +124,7 @@ export const CROP_GUIDES_NE: CropGuide[] = [
     scientific: "Triticum aestivum",
     category: "अन्न",
     season: "हिउँद (रबी)",
-    image: "/assets/images/Crop.png",
+    image: "/assets/images/wheat.jpg",
     description: "तराई र मध्यपहाडी क्षेत्रको प्रमुख हिउँदे बाली, खाद्य सुरक्षाका लागि आवश्यक छ।",
     stats: {
       temp: "10°C - 25°C",
@@ -144,7 +144,7 @@ export const CROP_GUIDES_NE: CropGuide[] = [
     scientific: "Zea mays",
     category: "अन्न",
     season: "गर्मी/मनसुन",
-    image: "/assets/images/Crop.png",
+    image: "/assets/images/makai.png",
     description: "मानिसको खाना र पशु आहाराका लागि पहाडी क्षेत्रमा व्यापक रूपमा लगाइन्छ।",
     stats: {
       temp: "18°C - 30°C",
@@ -164,7 +164,7 @@ export const CROP_GUIDES_NE: CropGuide[] = [
     scientific: "Solanum tuberosum",
     category: "तरकारी",
     season: "हिउँद",
-    image: "/assets/images/Crop.png",
+    image: "/assets/images/potato.jpg",
     description: "नेपालको प्रमुख नगदे बाली, तराई, पहाड र हिमालमा लगाइन्छ।",
     stats: {
       temp: "15°C - 25°C",
