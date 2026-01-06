@@ -5,8 +5,8 @@ import {
     Sprout, Brain, MapPin, Cloudy, Thermometer,
     Droplets, FlaskConical, Beaker, Waves, TrendingUp,
     ChevronRight, CheckCircle2, AlertCircle,
-    Info, Wind, Sun, Sparkles, Calendar, Loader2, Lightbulb, Settings2 , Gauge , Zap
- } from "lucide-react";
+    Info, Wind, Sun, Sparkles, Calendar, Loader2, Lightbulb, Settings2, Gauge, Zap
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { mapToPriceCommodity } from "@/lib/commodities";
@@ -341,17 +341,6 @@ export default function SmartAdvisorPage() {
             <div className="max-w-7xl mx-auto">
                 {/* Hero Header */}
                 <div className="text-center mb-12">
-<<<<<<< HEAD
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-sm font-bold mb-6"
-                    >
-                        
-                    </motion.div>
-=======
-
->>>>>>> 61684a2947287f3fc72602be4249ff997ffeb119
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
                         Smart <span className="bg-gradient-to-r from-emerald-500 to-green-600 bg-clip-text text-transparent">Farming</span> Advisor
                     </h1>
