@@ -11,6 +11,11 @@ from PIL import Image
 from io import BytesIO
 import google.generativeai as genai
 from torch.serialization import add_safe_globals
+import xgboost as xgb
+import pandas as pd
+import category_encoders as ce
+from datetime import datetime
+import numpy as np
 
 
 # Crop name mapping
@@ -89,7 +94,89 @@ def predict_crop(n, p, k, temp, humidity, ph, rainfall):
     }
 
 
-# Soil type mapping
+_price_model = None
+_price_encoder = None
+
+def load_price_model():
+    """
+    Load the price prediction model and encoder from disk
+    Uses lazy loading - only loads once on first call
+    """
+    global _price_model, _price_encoder
+    
+    if _price_model is None:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(base_dir, "models", "xgboost_price_model_updated.pkl")
+        encoder_path = os.path.join(base_dir, "models", "commodity_target_encoder_updated.pkl")
+        
+        try:
+            _price_model = joblib.load(model_path)
+            _price_encoder = joblib.load(encoder_path)
+        
+        except Exception as e:
+            print(f"Error loading price model: {e}")
+            raise e
+    
+    return _price_model, _price_encoder
+
+def predict_price(commodity, date_str):
+    """
+    Predict commodity price based on commodity name and date.
+    Corrects feature names and types to match model training.
+    """
+    model, encoder = load_price_model()
+    
+    try:
+        # 1. Parse the date
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        month = date_obj.month
+        year = date_obj.year
+        
+        # 2. Encode the commodity
+        # Passing as a DataFrame to avoid "UserWarning: X does not have valid feature names"
+        comm_df = pd.DataFrame({'Commodity': [commodity]})
+        encoded_output = encoder.transform(comm_df[['Commodity']])
+        
+        # Convert encoded output to a single numeric value safely
+        if hasattr(encoded_output, "toarray"):
+            # Handles Sparse Matrices (OneHotEncoder)
+            encoded_val = encoded_output.toarray().ravel()[0]
+        elif hasattr(encoded_output, "values"):
+            # Handles Pandas Objects
+            encoded_val = encoded_output.values.ravel()[0]
+        else:
+            # Handles NumPy Arrays
+            encoded_val = encoded_output.ravel()[0]
+
+        # 3. Construct the input DataFrame 
+        # Crucial: Names and Order must match training: ['year', 'month', 'Commodity_enc']
+        input_data = pd.DataFrame([{
+            'year': year,
+            'month': month,
+            'Commodity_enc': encoded_val
+        }])
+
+        # 4. Make prediction
+        # Ensure column order matches exactly what the model expects
+        input_data = input_data[['year', 'month', 'Commodity_enc']]
+        
+        prediction = model.predict(input_data)
+        # print(prediction)
+        predicted_price = float(np.expm1(prediction[0]))
+        predicted_price = np.round(predicted_price)
+        
+        return {
+            'commodity': commodity,
+            'date': date_str,
+            'predicted_price': predicted_price,
+            'currency': 'NPR'
+        }
+        
+    except Exception as e:
+        print(f"Error during price prediction: {e}")
+        raise e
+
+
 SOIL_TYPE_MAPPING = {
     0: 'Sandy',
     1: 'Loamy',
