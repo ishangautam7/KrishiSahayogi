@@ -64,7 +64,7 @@ export default function LandingPage() {
         desc: "Advanced AI models to forecast the perfect fertilizer mix for your soil and crops.",
         icon: BarChart3,
         color: "emerald",
-        image: "/assets/images/Yield.png",
+        image: "/assets/images/fertilizer.png",
         link: "/fertilizer-prediction"
       },
       {
@@ -72,7 +72,7 @@ export default function LandingPage() {
         desc: "Personalized suggestions for what to plant next to maximize your season's profit.",
         icon: Sprout,
         color: "green",
-        image: "/assets/images/Crop.png",
+        image: "/assets/images/makai.png",
         link: "/crop-recommendation"
       },
       {
@@ -96,16 +96,16 @@ export default function LandingPage() {
         desc: "Connect with local experts, share wisdom, and grow your community.",
         icon: Users,
         color: "blue",
-        image: "/assets/images/Farmer.png",
+        image: "/assets/images/networking.png",
         link: "/farmer-network"
       },
       {
-        title: t("marketplace"),
-        desc: "Direct farm-to-table access. Sell your produce at fair prices with no middlemen.",
+        title: t("price_prediction"),
+        desc: "Predict price based on Kalimati Bazar before planting to maximize your profit.",
         icon: ShoppingBag,
         color: "rose",
         image: "/assets/images/Marketplace.png",
-        link: "/marketplace"
+        link: "/price-prediction"
       }
     ];
 
@@ -328,21 +328,22 @@ export default function LandingPage() {
                 Empowering Nepali farmers with the power of Artificial Intelligence and direct market access.
               </p>
               <div className="flex gap-4">
-                {[MessageCircle, Users, BarChart3].map((Icon, idx) => (
+                {/* {[MessageCircle, Users, BarChart3].map((Icon, idx) => (
                   <Link key={idx} href="#" className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-white hover:bg-emerald-500 transition-colors">
                     <Icon className="w-6 h-6" />
                   </Link>
-                ))}
+                ))} */}
               </div>
             </div>
 
             <div>
               <h6 className="text-white font-bold mb-8 uppercase tracking-widest text-xs">Resources</h6>
               <ul className="space-y-4 text-gray-400 text-sm">
-                <li><Link href="#" className="hover:text-emerald-500 transition-colors">AI Diagnostics</Link></li>
-                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Market Pricing</Link></li>
-                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Plantation Guide</Link></li>
-                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Support Portal</Link></li>
+                <li><Link href="/crop-recommendation" className="hover:text-emerald-500 transition-colors">Crop Recommendation</Link></li>
+                <li><Link href="/marketplace"
+ className="hover:text-emerald-500 transition-colors">Market Pricing</Link></li>
+                <li><Link href="/plantation-guide" className="hover:text-emerald-500 transition-colors">Plantation Guide</Link></li>
+                <li><Link href="/farmer-network" className="hover:text-emerald-500 transition-colors">Networking</Link></li>
               </ul>
             </div>
 
