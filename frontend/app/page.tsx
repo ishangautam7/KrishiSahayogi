@@ -61,7 +61,7 @@ export default function LandingPage() {
   }[] = [
       {
         title: t("fertilizer_prediction"),
-        desc: "Advanced AI models to forecast the perfect fertilizer mix for your soil and crops.",
+        desc: t("finding_fertilizer"),
         icon: BarChart3,
         color: "emerald",
         image: "/assets/images/fertilizer.png",
@@ -69,7 +69,7 @@ export default function LandingPage() {
       },
       {
         title: t("crop_recommendation"),
-        desc: "Personalized suggestions for what to plant next to maximize your season's profit.",
+        desc: t("analyzing_soil"),
         icon: Sprout,
         color: "green",
         image: "/assets/images/makai.png",
@@ -77,7 +77,7 @@ export default function LandingPage() {
       },
       {
         title: t("disease_detection"),
-        desc: "Snap a photo and get instant diagnosis and organic treatment solutions.",
+        desc: t("generating_insights"),
         icon: Microscope,
         color: "teal",
         image: "/assets/images/Disease.png",
@@ -101,7 +101,7 @@ export default function LandingPage() {
       },
       {
         title: t("price_prediction"),
-        desc: "Predict price based on Kalimati Bazar before planting to maximize your profit.",
+        desc: t("forecasting_market"),
         icon: ShoppingBag,
         color: "rose",
         image: "/assets/images/Marketplace.png",
@@ -341,7 +341,7 @@ export default function LandingPage() {
               <ul className="space-y-4 text-gray-400 text-sm">
                 <li><Link href="/crop-recommendation" className="hover:text-emerald-500 transition-colors">Crop Recommendation</Link></li>
                 <li><Link href="/marketplace"
- className="hover:text-emerald-500 transition-colors">Market Pricing</Link></li>
+                  className="hover:text-emerald-500 transition-colors">Market Pricing</Link></li>
                 <li><Link href="/plantation-guide" className="hover:text-emerald-500 transition-colors">Plantation Guide</Link></li>
                 <li><Link href="/farmer-network" className="hover:text-emerald-500 transition-colors">Networking</Link></li>
               </ul>

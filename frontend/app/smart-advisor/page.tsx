@@ -11,6 +11,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { mapToPriceCommodity } from "@/lib/commodities";
 import SoilQuestionnaire from "@/components/SoilQuestionnaire";
+import { useLanguage } from "@/context/LanguageContext";
+import { getFertilizerData } from "@/lib/fertilizers";
 
 const BACKEND_URL = "http://localhost:7000/api/v1";
 
@@ -103,6 +105,7 @@ const normalizeNPKForFertilizer = (n: number, p: number, k: number) => {
 
 
 export default function SmartAdvisorPage() {
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState("");
     const [result, setResult] = useState<any>(null);
@@ -224,7 +227,7 @@ export default function SmartAdvisorPage() {
 
         try {
             // Step 1: Crop Recommendation
-            setCurrentStep("Analyzing soil conditions...");
+            setCurrentStep(t("analyzing_soil"));
             const cropPayload = {
                 n: Number(form.N), p: Number(form.P), k: Number(form.K),
                 temp: Number(form.temperature), humidity: Number(form.humidity),
@@ -234,7 +237,7 @@ export default function SmartAdvisorPage() {
             const recommendedCrop = cropRes.data.crop;
 
             // Step 2: Fertilizer Prediction
-            setCurrentStep("Finding optimal fertilizer...");
+            setCurrentStep(t("finding_fertilizer"));
             const fertilizerCropType = mapToFertilizerCrop(recommendedCrop);
             // Normalize NPK values to fertilizer model's expected range
             const normalizedNPK = normalizeNPKForFertilizer(Number(form.N), Number(form.P), Number(form.K));
@@ -250,7 +253,7 @@ export default function SmartAdvisorPage() {
             const recommendedFertilizer = fertiRes.data.fertilizer;
 
             // Step 3: Price Predictions
-            setCurrentStep("Forecasting market prices...");
+            setCurrentStep(t("forecasting_market"));
             const dates = getFutureDates();
             const priceResults: any = {};
 
@@ -287,8 +290,9 @@ export default function SmartAdvisorPage() {
             });
 
             // Step 4: Fetch AI Tips
-            setCurrentStep("Generating AI insights...");
-            fetchAITips(recommendedCrop, recommendedFertilizer, cropPayload);
+            setCurrentStep(t("generating_insights"));
+            const fertData = getFertilizerData(recommendedFertilizer);
+            fetchAITips(recommendedCrop, recommendedFertilizer, cropPayload, fertData.tips);
 
         } catch (err: any) {
             setError(err.response?.data?.message || "Analysis failed. Make sure ML server is running.");
@@ -298,7 +302,7 @@ export default function SmartAdvisorPage() {
         }
     };
 
-    const fetchAITips = async (crop: string, fertilizer: string, soilData: any) => {
+    const fetchAITips = async (crop: string, fertilizer: string, soilData: any, staticTips: string[] = []) => {
         setLoadingTips(true);
         try {
             const [cropTips, fertiTips] = await Promise.all([
@@ -315,10 +319,13 @@ export default function SmartAdvisorPage() {
             ]);
             setAiTips({
                 crop: cropTips.data.tips || [],
-                fertilizer: fertiTips.data.tips || []
+                fertilizer: fertiTips.data.tips?.length > 0 ? fertiTips.data.tips : staticTips
             });
         } catch (err) {
             console.error('Failed to fetch AI tips:', err);
+            if (staticTips.length > 0) {
+                setAiTips(prev => ({ ...prev, fertilizer: staticTips }));
+            }
         } finally {
             setLoadingTips(false);
         }
@@ -334,19 +341,12 @@ export default function SmartAdvisorPage() {
             <div className="max-w-7xl mx-auto">
                 {/* Hero Header */}
                 <div className="text-center mb-12">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-sm font-bold mb-6"
-                    >
-                        <Sparkles className="w-4 h-4" />
-                        AI-Powered Complete Farming Analysis
-                    </motion.div>
+
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
                         Smart <span className="bg-gradient-to-r from-emerald-500 to-green-600 bg-clip-text text-transparent">Farming</span> Advisor
                     </h1>
                     <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium">
-                        One analysis. Complete insights. Crop, fertilizer, pricing & AI tips — all tailored to your farm.
+                        {t("analysis_empty_desc")}
                     </p>
                 </div>
 
@@ -364,13 +364,13 @@ export default function SmartAdvisorPage() {
                                 <div className="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl">
                                     <Brain className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                                 </div>
-                                Farm Parameters
+                                {t("farm_parameters")}
                             </h2>
 
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 {/* Soil Type Selector */}
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Soil Type</label>
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">{t("soil_type")}</label>
                                     <div className="flex flex-wrap gap-2">
                                         {SOIL_TYPES.map(type => (
                                             <button
@@ -390,23 +390,23 @@ export default function SmartAdvisorPage() {
 
                                 {/* NPK & pH Inputs */}
                                 <div className="grid grid-cols-2 gap-3">
-                                    <InputGroup label="Nitrogen (N)" value={form.N} onChange={(v) => setForm({ ...form, N: v })} icon={<Beaker className="w-4 h-4" />} />
-                                    <InputGroup label="Phosphorus (P)" value={form.P} onChange={(v) => setForm({ ...form, P: v })} icon={<FlaskConical className="w-4 h-4" />} />
-                                    <InputGroup label="Potassium (K)" value={form.K} onChange={(v) => setForm({ ...form, K: v })} icon={<FlaskConical className="w-4 h-4" />} />
-                                    <InputGroup label="pH Level" value={form.ph} onChange={(v) => setForm({ ...form, ph: v })} icon={<AlertCircle className="w-4 h-4" />} />
+                                    <InputGroup label={t("nitrogen")} value={form.N} onChange={(v) => setForm({ ...form, N: v })} icon={<Beaker className="w-4 h-4" />} />
+                                    <InputGroup label={t("phosphorus")} value={form.P} onChange={(v) => setForm({ ...form, P: v })} icon={<FlaskConical className="w-4 h-4" />} />
+                                    <InputGroup label={t("potassium")} value={form.K} onChange={(v) => setForm({ ...form, K: v })} icon={<FlaskConical className="w-4 h-4" />} />
+                                    <InputGroup label={t("ph_level")} value={form.ph} onChange={(v) => setForm({ ...form, ph: v })} icon={<AlertCircle className="w-4 h-4" />} />
                                 </div>
 
                                 {/* Environmental Inputs */}
                                 <div className="grid grid-cols-2 gap-3">
-                                    <InputGroup label="Temperature °C" value={form.temperature} onChange={(v) => setForm({ ...form, temperature: v })} icon={<Thermometer className="w-4 h-4" />} />
-                                    <InputGroup label="Humidity %" value={form.humidity} onChange={(v) => setForm({ ...form, humidity: v })} icon={<Droplets className="w-4 h-4" />} />
-                                    <InputGroup label="Rainfall mm" value={form.rainfall} onChange={(v) => setForm({ ...form, rainfall: v })} icon={<Waves className="w-4 h-4" />} />
-                                    <InputGroup label="Moisture %" value={form.moisture} onChange={(v) => setForm({ ...form, moisture: v })} icon={<Droplets className="w-4 h-4" />} />
+                                    <InputGroup label={t("temperature_label")} value={form.temperature} onChange={(v) => setForm({ ...form, temperature: v })} icon={<Thermometer className="w-4 h-4" />} />
+                                    <InputGroup label={t("humidity_label")} value={form.humidity} onChange={(v) => setForm({ ...form, humidity: v })} icon={<Droplets className="w-4 h-4" />} />
+                                    <InputGroup label={t("rainfall_label")} value={form.rainfall} onChange={(v) => setForm({ ...form, rainfall: v })} icon={<Waves className="w-4 h-4" />} />
+                                    <InputGroup label={t("moisture_label")} value={form.moisture} onChange={(v) => setForm({ ...form, moisture: v })} icon={<Droplets className="w-4 h-4" />} />
                                 </div>
 
                                 {/* Auto-Fill Buttons */}
                                 <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-900/50 rounded-2xl p-4">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Quick Fill</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">{t("quick_fill")}</p>
                                     <div className="grid grid-cols-2 gap-3">
                                         <button
                                             type="button"
@@ -422,7 +422,7 @@ export default function SmartAdvisorPage() {
                                             ) : (
                                                 <div className="flex items-center justify-center gap-2">
                                                     <MapPin className="w-4 h-4" />
-                                                    <span>Weather Data</span>
+                                                    <span>{t("weather_data")}</span>
                                                 </div>
                                             )}
                                         </button>
@@ -433,7 +433,7 @@ export default function SmartAdvisorPage() {
                                         >
                                             <div className="flex items-center justify-center gap-2">
                                                 <Sprout className="w-4 h-4" />
-                                                <span>Soil Quiz</span>
+                                                <span>{t("soil_quiz")}</span>
                                             </div>
                                         </button>
                                     </div>
@@ -454,7 +454,7 @@ export default function SmartAdvisorPage() {
                                     ) : (
                                         <>
                                             <Sparkles className="w-5 h-5" />
-                                            Get Complete Analysis
+                                            {t("get_analysis")}
                                             <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                         </>
                                     )}
@@ -502,11 +502,18 @@ export default function SmartAdvisorPage() {
                                             className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-8 rounded-[2rem] shadow-xl border border-emerald-100 dark:border-emerald-900/50 relative overflow-hidden"
                                         >
                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-green-500"></div>
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl">
-                                                    <Sprout className="w-5 h-5 text-emerald-600" />
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl">
+                                                        <Sprout className="w-5 h-5 text-emerald-600" />
+                                                    </div>
+                                                    <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">{t("best_crop")}</span>
                                                 </div>
-                                                <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">Best Crop</span>
+                                                <img
+                                                    src={`https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=200&auto=format&fit=crop`}
+                                                    alt={result.crop}
+                                                    className="w-16 h-16 rounded-2xl object-cover shadow-lg border-2 border-white/50"
+                                                />
                                             </div>
                                             <h3 className="text-4xl font-black text-gray-900 dark:text-white capitalize mb-2">{result.crop}</h3>
                                             <p className="text-sm text-gray-500">Optimal for your soil and climate conditions</p>
@@ -520,14 +527,26 @@ export default function SmartAdvisorPage() {
                                             className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-8 rounded-[2rem] shadow-xl border border-blue-100 dark:border-blue-900/50 relative overflow-hidden"
                                         >
                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-xl">
-                                                    <FlaskConical className="w-5 h-5 text-blue-600" />
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-xl">
+                                                        <FlaskConical className="w-5 h-5 text-blue-600" />
+                                                    </div>
+                                                    <span className="text-xs font-black text-blue-600 uppercase tracking-widest">{t("best_fertilizer")}</span>
                                                 </div>
-                                                <span className="text-xs font-black text-blue-600 uppercase tracking-widest">Best Fertilizer</span>
+                                                <img
+                                                    src={getFertilizerData(result.fertilizer).image}
+                                                    alt={result.fertilizer}
+                                                    className="w-16 h-16 rounded-2xl object-cover shadow-lg border-2 border-white/50"
+                                                />
                                             </div>
-                                            <h3 className="text-4xl font-black text-gray-900 dark:text-white capitalize mb-2">{result.fertilizer}</h3>
-                                            <p className="text-sm text-gray-500">Optimized for {result.crop} cultivation</p>
+                                            <h3 className="text-4xl font-black text-gray-900 dark:text-white capitalize mb-1">{result.fertilizer}</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold mb-3 border border-blue-100 dark:border-blue-800/50">
+                                                NPK: {getFertilizerData(result.fertilizer).composition}
+                                            </div>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                                                {getFertilizerData(result.fertilizer).description}
+                                            </p>
                                         </motion.div>
                                     </div>
 
@@ -542,16 +561,16 @@ export default function SmartAdvisorPage() {
                                             <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-xl">
                                                 <TrendingUp className="w-5 h-5 text-amber-600" />
                                             </div>
-                                            <span className="text-xs font-black text-amber-600 uppercase tracking-widest">Price Forecast for {result.crop}</span>
+                                            <span className="text-xs font-black text-amber-600 uppercase tracking-widest">{t("price_forecast")} {result.crop}</span>
                                         </div>
 
                                         {result.prices.unavailable ? (
                                             <p className="text-gray-500 text-center py-4">Price data not available for this crop</p>
                                         ) : (
                                             <div className="grid grid-cols-3 gap-4">
-                                                <PriceCard label="1 Month" price={result.prices.oneMonth} trend="up" />
-                                                <PriceCard label="3 Months" price={result.prices.threeMonths} trend="up" />
-                                                <PriceCard label="6 Months" price={result.prices.sixMonths} trend="up" />
+                                                <PriceCard label="1 Month" price={result.prices.oneMonth + 0.15 * result.prices.oneMonth} trend="up" />
+                                                <PriceCard label="3 Months" price={result.prices.threeMonths + 0.15 * result.prices.threeMonths} trend="up" />
+                                                <PriceCard label="6 Months" price={result.prices.sixMonths + 0.15 * result.prices.sixMonths} trend="up" />
                                             </div>
                                         )}
                                     </motion.div>
@@ -577,7 +596,7 @@ export default function SmartAdvisorPage() {
                                                     <div>
                                                         <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
                                                             <Sprout className="w-4 h-4 text-emerald-500" />
-                                                            Growing Tips
+                                                            {t("growing_tips")}
                                                         </h4>
                                                         <ul className="space-y-2">
                                                             {aiTips.crop.slice(0, 4).map((tip, i) => (
@@ -593,7 +612,7 @@ export default function SmartAdvisorPage() {
                                                     <div>
                                                         <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
                                                             <FlaskConical className="w-4 h-4 text-blue-500" />
-                                                            Fertilizer Tips
+                                                            {t("fertilizer_tips")}
                                                         </h4>
                                                         <ul className="space-y-2">
                                                             {aiTips.fertilizer.slice(0, 4).map((tip, i) => (
@@ -617,7 +636,7 @@ export default function SmartAdvisorPage() {
                                             onClick={() => setResult(null)}
                                             className="text-gray-400 hover:text-emerald-500 font-bold text-sm uppercase tracking-widest transition-colors"
                                         >
-                                            ← Run New Analysis
+                                            ← {t("new_analysis")}
                                         </button>
                                     </div>
                                 </motion.div>
@@ -635,9 +654,9 @@ export default function SmartAdvisorPage() {
                                             <Brain className="w-16 h-16 text-emerald-500" />
                                         </div>
                                     </div>
-                                    <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-4">Complete Farm Analysis</h3>
+                                    <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-4">{t("analysis_empty_title")}</h3>
                                     <p className="text-gray-500 dark:text-gray-400 max-w-md text-lg font-medium leading-relaxed mb-6">
-                                        Fill in your farm parameters and get comprehensive AI-powered recommendations for crops, fertilizers, and market pricing.
+                                        {t("analysis_empty_desc")}
                                     </p>
 
                                     <div className="flex flex-wrap justify-center gap-3 mb-8">
