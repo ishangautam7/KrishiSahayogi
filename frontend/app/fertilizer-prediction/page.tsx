@@ -97,7 +97,7 @@ export default function FertilizerPredictionPage() {
 
                 try {
                     const response = await axios.get(
-                        `http://localhost:7000/api/v1/location/environmental-data?lat=${latitude}&lon=${longitude}`
+                        `http://localhost:7000/api/v1/location/data?lat=${latitude}&lon=${longitude}`
                     );
 
                     if (response.data.success) {

@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Backend API URL - Using correct IP from Metro Bundler
-const API_BASE_URL = 'http://192.168.1.64:7000/api/v1';
+const API_BASE_URL = 'http://192.168.101.18:7000/api/v1';
 
 // Create axios instance
 const apiClient = axios.create({
@@ -94,6 +94,9 @@ export const api = {
     predictDisease: (formData: FormData) =>
         apiClient.post('/disease/predict', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
+            transformRequest: (data, headers) => {
+                return data;
+            },
         }),
 
     // Soil Assessment
@@ -110,17 +113,13 @@ export const api = {
     // Notices
     getNotices: () =>
         apiClient.get('/notices'),
-};
 
-// ML Server API (separate from main backend)
-const ML_BASE_URL = 'http://192.168.1.64:5000';
-
-export const mlApi = {
+    // ML Predictions (proxied through Node backend)
     predictCrop: (data: any) =>
-        axios.post(`${ML_BASE_URL}/predict_crop`, data),
+        apiClient.post('/ml/predict-crop', data),
 
     predictFertilizer: (data: any) =>
-        axios.post(`${ML_BASE_URL}/predict_fertilizer`, data),
+        apiClient.post('/ml/predict-fertilizer', data),
 };
 
 export default apiClient;

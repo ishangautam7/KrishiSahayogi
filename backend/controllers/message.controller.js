@@ -9,11 +9,14 @@ export const sendMessage = async (req, res, next) => {
         const { receiver, text } = req.body;
         const sender = req.user.id;
 
-        const message = await Message.create({
+        let message = await Message.create({
             sender,
             receiver,
             text
         });
+
+        message = await message.populate('sender', 'name avatar');
+        message = await message.populate('receiver', 'name avatar');
 
         const io = getIO();
         console.log(`Emitting newMessage to room: ${receiver}`);
@@ -41,7 +44,10 @@ export const getConversation = async (req, res, next) => {
                 { sender: me, receiver: otherUser },
                 { sender: otherUser, receiver: me }
             ]
-        }).sort({ createdAt: 1 });
+        })
+            .sort({ createdAt: 1 })
+            .populate('sender', 'name avatar')
+            .populate('receiver', 'name avatar');
 
         res.status(200).json({
             success: true,

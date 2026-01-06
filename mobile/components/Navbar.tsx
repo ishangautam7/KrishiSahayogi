@@ -8,6 +8,12 @@ export default function Navbar() {
   const pathname = usePathname();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
+  // Hide navbar on specific screens
+  const hiddenRoutes = ['/messages', '/notices', '/login', '/register'];
+  const shouldHide = hiddenRoutes.some(route => pathname.includes(route));
+
+  if (shouldHide) return null;
+
   const navItems = [
     {
       name: 'Home',
@@ -58,7 +64,7 @@ export default function Navbar() {
             activeOpacity={0.7}
           >
             <View style={[
-              styles.iconContainer, 
+              styles.iconContainer,
               item.isMiddle && styles.middleIconContainer,
               item.isActive && !item.isMiddle && styles.activeIconContainer
             ]}>

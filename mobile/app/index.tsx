@@ -24,7 +24,7 @@ const { width } = Dimensions.get('window');
 // Translation Dictionary
 const translations = {
     en: {
-        heroTitle: 'Modern Farming for a Golden Harvest',
+        heroTitle: 'Modern Farming to Golden Harvest',
         heroSubtitle: 'Empowering farmers with AI tools and expert insights.',
         startFarming: 'Start Farming',
         diseaseDetection: 'Disease Detection',
@@ -129,11 +129,16 @@ export default function LandingPage() {
     const loadNotices = async () => {
         try {
             const res = await api.getNotices();
-            if (res.data && res.data.success) {
-                setNotices(res.data.data.slice(0, 3)); // Take top 3 notices
+            // Handle both formats: array directly or wrapped in {success, data}
+            let noticesData = [];
+            if (res.data && res.data.success && Array.isArray(res.data.data)) {
+                noticesData = res.data.data;
+            } else if (Array.isArray(res.data)) {
+                noticesData = res.data;
             }
+            setNotices(noticesData.slice(0, 3)); // Take top 3 notices
         } catch (error) {
-            console.log("Failed to load notices");
+            console.log("Failed to load notices", error);
         }
     };
 
@@ -147,7 +152,7 @@ export default function LandingPage() {
                 bounces={false}
             >
                 {/* Hero Section */}
-                <View style={styles.heroContainer}>
+                <View style={[styles.heroContainer, { minHeight: Dimensions.get('window').height * 0.68 }]}>
                     <ImageBackground
                         source={{ uri: 'https://images.unsplash.com/photo-1625246333195-bf5f7955dcb2?q=80&w=1000&auto=format&fit=crop' }}
                         style={styles.heroImage}
@@ -220,10 +225,6 @@ export default function LandingPage() {
                 {/* Main Content - Floating Sheet */}
                 <View style={styles.sheetContainer}>
 
-                    {/* Weather Widget Section */}
-                    <View style={styles.weatherSection}>
-                        <WeatherWidget />
-                    </View>
 
                     {/* Ecosystem Grid */}
                     <View style={styles.sectionHeader}>
@@ -255,25 +256,38 @@ export default function LandingPage() {
                         })}
                     </View>
 
-                    {/* Notices Section */}
-                    {notices.length > 0 && (
-                        <View style={styles.noticesSection}>
-                            <View style={styles.sectionHeader}>
-                                <Text style={styles.sectionTitle}>{t.noticesTitle}</Text>
-                            </View>
+                    {/* Notices Section - Always visible */}
+                    <View style={styles.noticesSection}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>{t.noticesTitle}</Text>
+                            <TouchableOpacity onPress={() => router.push('/notices')}>
+                                <Text style={styles.viewAllText}>View All →</Text>
+                            </TouchableOpacity>
+                        </View>
+                        {notices.length > 0 ? (
                             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.noticesList}>
                                 {notices.map((notice, index) => (
-                                    <TouchableOpacity key={index} style={styles.noticeCard}>
+                                    <TouchableOpacity key={index} style={styles.noticeCard} onPress={() => router.push('/notices')}>
                                         <View style={styles.noticeIcon}>
                                             <Ionicons name="newspaper-outline" size={20} color="#059669" />
                                         </View>
                                         <Text numberOfLines={2} style={styles.noticeTitle}>{notice.title}</Text>
-                                        <Text style={styles.noticeDate}>{new Date(notice.date).toLocaleDateString()}</Text>
+                                        <Text style={styles.noticeDate}>{new Date(notice.createdAt || notice.date).toLocaleDateString()}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
-                        </View>
-                    )}
+                        ) : (
+                            <TouchableOpacity style={styles.emptyNoticeCard} onPress={() => router.push('/notices')}>
+                                <Ionicons name="newspaper-outline" size={32} color="#10b981" />
+                                <Text style={styles.emptyNoticeText}>Tap to view agricultural notices</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+
+                    {/* Weather Widget Section */}
+                    <View style={styles.weatherSection}>
+                        <WeatherWidget />
+                    </View>
 
                     {/* Community Banner */}
                     <TouchableOpacity
@@ -453,11 +467,11 @@ const styles = StyleSheet.create({
     sheetContainer: {
         flex: 1,
         backgroundColor: '#f8fafc',
-        marginTop: -30, // Reduced overlap
+        marginTop: 50,
         borderTopLeftRadius: 32,
         borderTopRightRadius: 32,
         paddingHorizontal: 20,
-        paddingTop: 24, // Added padding to separate from overlap
+        paddingTop: 48,
         paddingBottom: 40,
     },
     weatherSection: {
@@ -475,6 +489,11 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: '800',
         color: '#1f2937',
+    },
+    viewAllText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#10b981',
     },
     gridContainer: {
         flexDirection: 'row',
@@ -551,6 +570,22 @@ const styles = StyleSheet.create({
     noticeDate: {
         fontSize: 12,
         color: '#9ca3af',
+    },
+    emptyNoticeCard: {
+        backgroundColor: '#ecfdf5',
+        padding: 24,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#d1fae5',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 12,
+    },
+    emptyNoticeText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#059669',
+        textAlign: 'center',
     },
     bannerContainer: {
         borderRadius: 24,

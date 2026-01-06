@@ -12,13 +12,10 @@ const getGeminiModel = () => {
         throw new Error("GEMINI_API_KEY is not configured in backend environment variables");
     }
     const genAI = new GoogleGenerativeAI(apiKey);
-    return genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    return genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 };
 
-/**
- * Generate crop-specific growing tips
- * POST /api/v1/ai/crop-tips
- */
+
 export const generateCropTips = async (req, res) => {
     try {
         const { crop, soilData, climate } = req.body;
@@ -143,10 +140,7 @@ Format: Return ONLY bullet points (•) without numbering. Keep each point under
     }
 };
 
-/**
- * Generate comprehensive plantation guide
- * POST /api/v1/ai/plantation-guide
- */
+
 export const generatePlantationGuide = async (req, res) => {
     try {
         const { cropName } = req.body;
@@ -160,7 +154,6 @@ export const generatePlantationGuide = async (req, res) => {
 
         const model = getGeminiModel();
 
-        // Generate both English and Nepali versions
         const prompt = `You are an expert agricultural scientist. Create a detailed plantation guide for "${cropName}" in BOTH English and Nepali.
 
 Return strictly valid JSON with this exact structure (no markdown formatting, just raw JSON):
@@ -239,7 +232,6 @@ IMPORTANT: Provide complete translations. The 'en' object should be in English, 
                         continue;
                     }
                 }
-                // For other errors, don't retry
                 throw err;
             }
         }
@@ -249,7 +241,6 @@ IMPORTANT: Provide complete translations. The 'en' object should be in English, 
     } catch (error) {
         console.error('Gemini Plantation Guide error:', error);
 
-        // Provide user-friendly error messages
         let message = 'Failed to generate plantation guide';
         if (error.status === 503) {
             message = 'AI service is temporarily unavailable. Please try again in a moment.';

@@ -31,6 +31,9 @@ export default function RootLayout() {
             <Stack.Screen name="crop-recommendation" options={{ headerShown: false }} />
             <Stack.Screen name="fertilizer-prediction" options={{ headerShown: false }} />
             <Stack.Screen name="disease-detection" options={{ headerShown: false }} />
+            <Stack.Screen name="notices" options={{ headerShown: false }} />
+            <Stack.Screen name="messages/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="plantation-guide" options={{ headerShown: false }} />
           </Stack>
           <Navbar />
         </View>

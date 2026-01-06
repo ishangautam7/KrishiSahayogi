@@ -82,6 +82,25 @@ export const getEnvironmentalData = async (req, res) => {
             console.error('Geocoding error:', geoError.message);
         }
 
+        // Get wind speed
+        const windSpeed = currentWeather.windspeed;
+
+        // Map WMO Weather Code to condition string
+        // https://open-meteo.com/en/docs
+        const getCondition = (code) => {
+            if (code === 0) return 'Clear';
+            if (code === 1 || code === 2 || code === 3) return 'Cloudy';
+            if (code >= 45 && code <= 48) return 'Foggy';
+            if (code >= 51 && code <= 55) return 'Drizzle';
+            if (code >= 61 && code <= 67) return 'Rain';
+            if (code >= 71 && code <= 77) return 'Snow';
+            if (code >= 80 && code <= 82) return 'Rain';
+            if (code >= 95 && code <= 99) return 'Thunderstorm';
+            return 'Cloudy';
+        };
+
+        const condition = getCondition(currentWeather.weathercode);
+
         // Return only scientifically valid data from weather APIs
         // NPK and pH should be obtained via questionnaire or manual entry
         const environmentalData = {
@@ -95,7 +114,9 @@ export const getEnvironmentalData = async (req, res) => {
                 temperature: Math.round(temperature * 10) / 10,
                 humidity: Math.round(humidity),
                 rainfall: Math.round(rainfall * 10) / 10,
-                soilMoisture: Math.round(soilMoisture)
+                soilMoisture: Math.round(soilMoisture),
+                windSpeed: Math.round(windSpeed * 10) / 10,
+                condition: condition
             }
         };
 

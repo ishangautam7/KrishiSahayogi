@@ -12,7 +12,7 @@ import {
     Image,
     StatusBar,
 } from 'react-native';
-import { useLocalSearchParams, router } from 'expo-router';
+import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '@/lib/api';
 import { useAppSelector } from '@/store/hooks';
@@ -38,8 +38,8 @@ export default function ChatScreen() {
         loadMessages();
         loadReceiverInfo();
 
-        // Poll for new messages every 3 seconds (simple implementation)
-        const interval = setInterval(loadMessages, 3000);
+        // Poll for new messages every 15 seconds (reduced from 3s to avoid excessive API calls)
+        const interval = setInterval(loadMessages, 5000);
         return () => clearInterval(interval);
     }, [id]);
 
@@ -57,7 +57,16 @@ export default function ChatScreen() {
     const loadMessages = async () => {
         try {
             const res = await api.getMessages(id as string);
-            setMessages(res.data);
+            // Fix: API returns { success: true, count: number, messages: Message[] }
+            if (res.data.success && Array.isArray(res.data.messages)) {
+                setMessages(res.data.messages);
+            } else if (Array.isArray(res.data)) {
+                // Fallback if API structure changes
+                setMessages(res.data);
+            } else {
+                console.log("Unexpected response format:", res.data);
+                setMessages([]);
+            }
             setLoading(false);
         } catch (error) {
             console.log("Failed to load messages");
@@ -76,7 +85,11 @@ export default function ChatScreen() {
         };
 
         // Optimistic update
-        setMessages(prev => [...prev, tempMsg]);
+        // Use functional state update with array check
+        setMessages(prev => {
+            const currentMessages = Array.isArray(prev) ? prev : [];
+            return [...currentMessages, tempMsg];
+        });
         setNewMessage('');
         setSending(true);
 
@@ -95,26 +108,35 @@ export default function ChatScreen() {
     };
 
     const renderMessage = ({ item }: { item: Message }) => {
-        const isMe = item.sender._id === user?._id;
+        // Ensure robust check for sender ID
+        // Handles if sender is populated object or just ID string (fallback)
+        const senderId = typeof item.sender === 'object' ? item.sender._id : item.sender;
+        const isMe = senderId === user?._id;
+        const senderName = typeof item.sender === 'object' && item.sender?.name ? item.sender.name : 'Unknown';
 
         return (
             <View style={[
-                styles.messageContainer,
-                isMe ? styles.myMessageContainer : styles.theirMessageContainer
+                styles.messageRow,
+                isMe ? styles.myMessageRow : styles.theirMessageRow
             ]}>
                 {!isMe && (
                     <View style={styles.avatar}>
                         <Ionicons name="person" size={12} color="#fff" />
                     </View>
                 )}
-                <View style={[
-                    styles.messageBubble,
-                    isMe ? styles.myMessage : styles.theirMessage
-                ]}>
-                    <Text style={[
-                        styles.messageText,
-                        isMe ? styles.myMessageText : styles.theirMessageText
-                    ]}>{item.text}</Text>
+                <View style={styles.messageContent}>
+                    {!isMe && (
+                        <Text style={styles.senderName}>{senderName}</Text>
+                    )}
+                    <View style={[
+                        styles.messageBubble,
+                        isMe ? styles.myMessage : styles.theirMessage
+                    ]}>
+                        <Text style={[
+                            styles.messageText,
+                            isMe ? styles.myMessageText : styles.theirMessageText
+                        ]}>{item.text}</Text>
+                    </View>
                     <Text style={[
                         styles.timestamp,
                         isMe ? styles.myTimestamp : styles.theirTimestamp
@@ -128,6 +150,7 @@ export default function ChatScreen() {
 
     return (
         <View style={styles.container}>
+            <Stack.Screen options={{ headerShown: false }} />
             <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
             {/* Header */}
@@ -164,13 +187,20 @@ export default function ChatScreen() {
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
             >
                 <View style={styles.inputContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Type a message..."
-                        value={newMessage}
-                        onChangeText={setNewMessage}
-                        multiline
-                    />
+                    <View style={styles.inputWrapper}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Type a message..."
+                            placeholderTextColor="#9ca3af"
+                            value={newMessage}
+                            onChangeText={setNewMessage}
+                            multiline
+                            maxLength={500}
+                        />
+                        {newMessage.length > 0 && (
+                            <Text style={styles.charCount}>{newMessage.length}/500</Text>
+                        )}
+                    </View>
                     <TouchableOpacity
                         style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
                         onPress={handleSend}
@@ -233,19 +263,17 @@ const styles = StyleSheet.create({
     },
     messageList: {
         padding: 16,
-        gap: 16,
     },
-    messageContainer: {
+    messageRow: {
         flexDirection: 'row',
-        alignItems: 'flex-end',
-        gap: 8,
-        marginBottom: 4,
+        marginBottom: 12,
+        paddingHorizontal: 4,
     },
-    myMessageContainer: {
-        flexDirection: 'row-reverse',
+    myMessageRow: {
+        justifyContent: 'flex-end',
     },
-    theirMessageContainer: {
-        flexDirection: 'row',
+    theirMessageRow: {
+        justifyContent: 'flex-start',
     },
     avatar: {
         width: 28,
@@ -254,9 +282,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#d1d5db',
         justifyContent: 'center',
         alignItems: 'center',
+        marginRight: 8,
+    },
+    messageContent: {
+        maxWidth: '75%',
+    },
+    senderName: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: '#6b7280',
+        marginLeft: 4,
+        marginBottom: 2,
     },
     messageBubble: {
-        maxWidth: '75%',
         padding: 12,
         borderRadius: 20,
         elevation: 1,
@@ -281,23 +319,29 @@ const styles = StyleSheet.create({
     },
     timestamp: {
         fontSize: 10,
-        marginTop: 4,
-        alignSelf: 'flex-end',
+        marginTop: 2,
+        paddingHorizontal: 4,
     },
     myTimestamp: {
-        color: 'rgba(255,255,255,0.7)',
+        color: '#6b7280',
+        textAlign: 'right',
     },
     theirTimestamp: {
         color: '#9ca3af',
+        textAlign: 'left',
     },
     inputContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-end',
         padding: 16,
         backgroundColor: '#fff',
         borderTopWidth: 1,
         borderTopColor: '#e5e7eb',
         gap: 12,
+    },
+    inputWrapper: {
+        flex: 1,
+        position: 'relative',
     },
     input: {
         flex: 1,
@@ -307,6 +351,18 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         maxHeight: 100,
         fontSize: 16,
+        color: '#1f2937',
+    },
+    charCount: {
+        position: 'absolute',
+        right: 12,
+        bottom: 8,
+        fontSize: 10,
+        color: '#9ca3af',
+        backgroundColor: '#f3f4f6',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 8,
     },
     sendButton: {
         width: 48,

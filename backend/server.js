@@ -13,6 +13,7 @@ import locationRoutes from "./routes/location.routes.js";
 import soilAssessmentRoutes from "./routes/soil-assessment.routes.js";
 import aiTipsRoutes from "./routes/ai-tips.routes.js";
 import noticeRoutes from "./routes/notice.routes.js";
+import mlRoutes from "./routes/ml.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
 
 const app = express();
@@ -38,6 +39,7 @@ app.use("/api/v1/location", locationRoutes);
 app.use("/api/v1/soil-assessment", soilAssessmentRoutes);
 app.use("/api/v1/ai", aiTipsRoutes);
 app.use("/api/v1/notices", noticeRoutes);
+app.use("/api/v1/ml", mlRoutes);
 
 // Error Handler
 app.use(errorHandler);

@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { mlApi } from '@/lib/api';
+import * as Location from 'expo-location';
+import { api } from '@/lib/api';
 
 export default function FertilizerPredictionScreen() {
     const [formData, setFormData] = useState({
@@ -26,9 +27,43 @@ export default function FertilizerPredictionScreen() {
     });
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<string | null>(null);
+    const [autoFilling, setAutoFilling] = useState(false);
 
     const soilTypes = ['Sandy', 'Loamy', 'Black', 'Red', 'Clayey'];
     const cropTypes = ['Cotton', 'Wheat', 'Rice', 'Maize', 'Sugarcane', 'Barley'];
+
+    const handleAutoFill = async () => {
+        setAutoFilling(true);
+        try {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Denied', 'Location permission is required for auto-detection');
+                setAutoFilling(false);
+                return;
+            }
+
+            const location = await Location.getCurrentPositionAsync({});
+            const { latitude, longitude } = location.coords;
+
+            const response = await api.getLocationData(latitude, longitude);
+
+            if (response.data.success) {
+                const { weather } = response.data;
+                setFormData({
+                    ...formData,
+                    Temperature: Math.round(weather.temperature).toString(),
+                    Humidity: Math.round(weather.humidity).toString(),
+                    Moisture: Math.round(weather.soilMoisture).toString(),
+                });
+                Alert.alert('Success', 'Environmental data detected successfully!');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Failed to detect environmental data. Please enter manually.');
+        } finally {
+            setAutoFilling(false);
+        }
+    };
 
     const handleSubmit = async () => {
         const { Temperature, Humidity, Moisture, Nitrogen, Potassium, Phosphorous } = formData;
@@ -51,7 +86,7 @@ export default function FertilizerPredictionScreen() {
                 phosphorus: Number(Phosphorous),
             };
 
-            const response = await mlApi.predictFertilizer(payload);
+            const response = await api.predictFertilizer(payload);
             setResult(response.data.fertilizer);
         } catch (error) {
             Alert.alert('Error', 'Failed to get prediction');
@@ -124,6 +159,21 @@ export default function FertilizerPredictionScreen() {
                     value={formData.Potassium}
                     onChangeText={(text) => setFormData({ ...formData, Potassium: text })}
                 />
+
+                <TouchableOpacity
+                    style={[styles.autoButton, autoFilling && styles.buttonDisabled]}
+                    onPress={handleAutoFill}
+                    disabled={autoFilling}
+                >
+                    {autoFilling ? (
+                        <ActivityIndicator color="#fff" size="small" />
+                    ) : (
+                        <>
+                            <Ionicons name="location" size={20} color="#fff" />
+                            <Text style={styles.autoButtonText}>Auto-Detect Environment</Text>
+                        </>
+                    )}
+                </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.button, loading && styles.buttonDisabled]}
@@ -227,5 +277,20 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#10b981',
         marginTop: 8,
+    },
+    autoButton: {
+        backgroundColor: '#0ea5e9',
+        borderRadius: 12,
+        height: 50,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 8,
+        marginTop: 20,
+    },
+    autoButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });

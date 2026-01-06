@@ -94,7 +94,7 @@ export default function CropRecommendationPage() {
 
                 try {
                     const response = await axios.get(
-                        `http://localhost:7000/api/v1/location/environmental-data?lat=${latitude}&lon=${longitude}`
+                        `http://localhost:7000/api/v1/location/data?lat=${latitude}&lon=${longitude}`
                     );
 
                     if (response.data.success) {
@@ -203,7 +203,7 @@ export default function CropRecommendationPage() {
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">
                         Crop <span className="text-emerald-500">Suggestion</span>
                     </h1>
-                   
+
                 </div>
 
                 <div className="grid lg:grid-cols-12 gap-10">

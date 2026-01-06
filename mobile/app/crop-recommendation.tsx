@@ -15,7 +15,8 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { mlApi } from '@/lib/api';
+import * as Location from 'expo-location';
+import { api } from '@/lib/api';
 
 export default function CropRecommendationScreen() {
     const [formData, setFormData] = useState({
@@ -29,6 +30,40 @@ export default function CropRecommendationScreen() {
     });
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<string | null>(null);
+    const [autoFilling, setAutoFilling] = useState(false);
+
+    const handleAutoFill = async () => {
+        setAutoFilling(true);
+        try {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Denied', 'Location permission is required for auto-detection');
+                setAutoFilling(false);
+                return;
+            }
+
+            const location = await Location.getCurrentPositionAsync({});
+            const { latitude, longitude } = location.coords;
+
+            const response = await api.getLocationData(latitude, longitude);
+
+            if (response.data.success) {
+                const { weather } = response.data;
+                setFormData({
+                    ...formData,
+                    temperature: Math.round(weather.temperature).toString(),
+                    humidity: Math.round(weather.humidity).toString(),
+                    rainfall: Math.round(weather.rainfall).toString(),
+                });
+                Alert.alert('Success', 'Environmental data detected successfully!');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Failed to detect environmental data. Please enter manually.');
+        } finally {
+            setAutoFilling(false);
+        }
+    };
 
     const handleSubmit = async () => {
         const values = Object.values(formData);
@@ -49,7 +84,7 @@ export default function CropRecommendationScreen() {
                 rainfall: Number(formData.rainfall),
             };
 
-            const response = await mlApi.predictCrop(payload);
+            const response = await api.predictCrop(payload);
             setResult(response.data.crop);
         } catch (error) {
             Alert.alert('Error', 'Failed to get prediction. Ensure ML server is running.');
@@ -138,6 +173,22 @@ export default function CropRecommendationScreen() {
                             <InputGroup label="Rainfall" icon="rainy" field="rainfall" placeholder="mm" range="Millimeters" />
                         </View>
                     </View>
+
+                    <TouchableOpacity
+                        style={[styles.autoDetectButton, autoFilling && styles.buttonDisabled]}
+                        onPress={handleAutoFill}
+                        disabled={autoFilling}
+                        activeOpacity={0.8}
+                    >
+                        {autoFilling ? (
+                            <ActivityIndicator color="#fff" size="small" />
+                        ) : (
+                            <>
+                                <Ionicons name="location" size={20} color="#fff" />
+                                <Text style={styles.autoDetectText}>Auto-Detect Environment</Text>
+                            </>
+                        )}
+                    </TouchableOpacity>
 
                     <TouchableOpacity
                         style={[styles.submitButton, loading && styles.buttonDisabled]}
@@ -315,6 +366,26 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: '#e2e8f0',
         marginVertical: 24,
+    },
+    autoDetectButton: {
+        backgroundColor: '#0ea5e9',
+        borderRadius: 16,
+        paddingVertical: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        marginTop: 24,
+        shadowColor: '#0ea5e9',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    autoDetectText: {
+        color: '#fff',
+        fontSize: 15,
+        fontWeight: '700',
     },
     submitButton: {
         marginTop: 32,

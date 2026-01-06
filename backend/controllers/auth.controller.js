@@ -28,7 +28,9 @@ const sendToken = (user, statusCode, res) => {
         .cookie("refreshToken", refreshToken, refreshTokenOptions)
         .json({
             success: true,
+            token,
             user: {
+                _id: user._id,
                 id: user._id,
                 name: user.name,
                 email: user.email,

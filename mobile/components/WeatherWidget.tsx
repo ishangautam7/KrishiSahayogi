@@ -87,8 +87,8 @@ const WeatherWidget = () => {
 
             <View style={styles.mainContent}>
                 <View>
-                    <Text style={styles.tempText}>{Math.round(weather.weather?.temp)}°</Text>
-                    <Text style={styles.realFeel}>Feels like {Math.round(weather.weather?.temp)}°</Text>
+                    <Text style={styles.tempText}>{Math.round(weather.weather?.temperature)}°</Text>
+                    <Text style={styles.realFeel}>Feels like {Math.round(weather.weather?.temperature)}°</Text>
                 </View>
                 <Ionicons name={getIcon(weather.weather?.condition || '') as any} size={64} color="#fff" />
             </View>
@@ -103,7 +103,7 @@ const WeatherWidget = () => {
                     <Text style={styles.detailText}>{weather.weather?.windSpeed} km/h</Text>
                 </View>
             </View>
-        </LinearGradient>
+        </LinearGradient >
     );
 };
 

@@ -1,5 +1,28 @@
 import { User } from "../models/user.model.js";
 
+// @desc    Get user by ID
+// @route   GET /api/v1/user/:id
+// @access  Public
+export const getUserById = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).select("-password");
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // @desc    Get nearby farmers
 // @route   GET /api/v1/users/nearby
 // @access  Private
