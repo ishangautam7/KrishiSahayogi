@@ -47,11 +47,11 @@ export default function Navbar() {
         { name: t("crop_recommendation"), href: "/crop-recommendation", icon: Brain, color: "text-green-500" },
         { name: t("disease_detection"), href: "/disease-detection", icon: Microscope, color: "text-teal-500" },
         { name: t("plantation_guide"), href: "/plantation-guide", icon: BookOpen, color: "text-amber-500" },
-        { name: t("yield_prediction"), href: "/yield-prediction", icon: BarChart3, color: "text-blue-500" },
+        { name: t("price_prediction"), href: "/price-prediction", icon: BarChart3, color: "text-blue-500" },
       ]
     },
     { name: t("community_network"), href: "/farmer-network", icon: Users },
-    { name: "Notice", href: "/notices", icon: FileText }, // Added Notice link
+    { name: t("notice"), href: "/notices", icon: FileText },
   ];
 
   return (
@@ -118,7 +118,7 @@ export default function Navbar() {
                               </div>
                               <div>
                                 <p className="text-sm font-black text-gray-900 dark:text-white">{feature.name}</p>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Launch Tool</p>
+                                
                               </div>
                             </Link>
                           ))}
@@ -130,7 +130,7 @@ export default function Navbar() {
               ) : (
                 <Link
                   key={link.name}
-                  href={link.href}
+                  href={link.href || "#"}
                   className="text-sm font-bold text-gray-800 dark:text-gray-100 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-2"
                 >
                   <link.icon className="w-4 h-4" />
@@ -228,7 +228,7 @@ export default function Navbar() {
                     </div>
                   ) : (
                     <Link
-                      href={link.href}
+                      href={link.href || "#"}
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 transition-colors font-bold"
                     >

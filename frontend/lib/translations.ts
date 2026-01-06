@@ -8,6 +8,7 @@ export const translations = {
         login_join: "Login",
         logout: "Logout",
         profile: "My Profile",
+        notice: "Notice",
 
         // Hero Section
         hero_brand: "Krishi Sahayogi",
@@ -47,7 +48,7 @@ export const translations = {
         fertilizer_prediction: "Fertilizer Prediction",
         crop_recommendation: "Crop Recommendation",
         disease_detection: "Disease Detection",
-        yield_prediction: "Yield Prediction",
+        price_prediction: "Price Prediction",
 
         // Plantation Guide
         plantation_manual: "Plantation Manual",
@@ -80,6 +81,7 @@ export const translations = {
         login_join: "लगइन",
         logout: "लगआउट",
         profile: "मेरो प्रोफाइल",
+        notice: "सूचना",
 
         // Hero Section
         hero_brand: "कृषि सहयोगी",
@@ -119,7 +121,7 @@ export const translations = {
         fertilizer_prediction: "मल सिफारिस",
         crop_recommendation: "बाली सिफारिस",
         disease_detection: "रोग पहिचान",
-        yield_prediction: "उत्पादन पूर्वानुमान",
+        price_prediction: "मूल्य पूर्वानुमान",
 
         // Plantation Guide
         plantation_manual: "रोपण म्यानुअल",

@@ -3,7 +3,8 @@ from flask_cors import CORS
 from services import (
     predict_crop, validate_input_data, 
     predict_fertilizer, validate_fertilizer_input_data,
-    predict_disease, get_disease_solution
+    predict_disease, get_disease_solution,
+    predict_price
 )
 from dotenv import load_dotenv
 load_dotenv()
@@ -169,6 +170,36 @@ def get_disease_solution_endpoint():
         }), 500
 
 
+
+@app.route('/predict_price', methods=['POST'])
+def predict_price_endpoint():
+    try:
+        data = request.get_json()
+        
+        if 'commodity' not in data or 'date' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'Missing required fields: commodity, date'
+            }), 400
+            
+        result = predict_price(
+            commodity=data['commodity'],
+            date_str=data['date']
+        )
+        
+        return jsonify({
+            'success': True,
+            **result
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
 if __name__ == '__main__':
+
     app.run(debug=True, port=5000)
 
