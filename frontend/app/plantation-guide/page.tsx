@@ -318,7 +318,7 @@ export default function PlantationGuidePage() {
                                     <div className="flex justify-between items-center group">
                                         <div className="flex items-center gap-3">
                                             <div className="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-xl">
-                                                <Wind className="w-5 h-5" />
+                                                 <Wind className="w-5 h-5" />
                                             </div>
                                             <span className="text-sm font-black text-gray-500">{t('soil_quality')}</span>
                                         </div>
