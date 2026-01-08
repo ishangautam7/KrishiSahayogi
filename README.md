@@ -34,7 +34,7 @@ To run the entire ecosystem locally:
 1.  **Backend:** `cd backend` -> `npm install` -> `npm run dev`
 2.  **AI Server:** `cd models` -> `pip install -r requirements.txt` -> `python app.py`
 3.  **Frontend:** `cd frontend` -> `npm install` -> `npm run dev`
-4.  **Mobile:** `cd mobile` -> `npm install` -> `npm start`
+4.  **Mobile:** `cd mobile` -> `npx expo install` -> `npx expo start `
 
 ##  Team DIMA
 
